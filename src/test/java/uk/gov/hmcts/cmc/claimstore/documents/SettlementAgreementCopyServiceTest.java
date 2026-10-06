@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement.SettlementAgreementPDFContentProvider;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SettlementAgreementCopyServiceTest {
     @Mock
     private SettlementAgreementPDFContentProvider contentProvider;
@@ -26,7 +26,7 @@ public class SettlementAgreementCopyServiceTest {
 
     private SettlementAgreementCopyService settlementAgreementCopyService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         settlementAgreementCopyService = new SettlementAgreementCopyService(
             contentProvider,
@@ -40,7 +40,7 @@ public class SettlementAgreementCopyServiceTest {
         Claim claim = SampleClaim.getDefault();
         try {
             settlementAgreementCopyService.createPdf(claim);
-            Assert.fail("Expected a NotFoundException to be thrown");
+            Assertions.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Settlement Agreement does not exist for this claim");
         }

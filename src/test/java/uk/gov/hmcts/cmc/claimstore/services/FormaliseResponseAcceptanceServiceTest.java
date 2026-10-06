@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -41,9 +41,11 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -61,7 +63,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFEN
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FormaliseResponseAcceptanceServiceTest {
 
     private static final String AUTH = "AUTH";
@@ -88,16 +90,16 @@ public class FormaliseResponseAcceptanceServiceTest {
     private LaunchDarklyClient launchDarklyClient;
     private PDF pdf;
 
-    @Before
+    @BeforeEach
     public void before() {
         pdf = new PDF(
             "name",
             PDF_CONTENT,
             ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
         );
-        when(documentService.uploadToDocumentManagement(any(PDF.class),
+        lenient().when(documentService.uploadToDocumentManagement(any(PDF.class),
             anyString(), any(Claim.class))).thenReturn(CLAIM);
-        when(claimantResponseReceiptService.createPdf(any(Claim.class), any())).thenReturn(pdf);
+        lenient().when(claimantResponseReceiptService.createPdf(any(Claim.class), any())).thenReturn(pdf);
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
             settlementAgreementService,
@@ -110,42 +112,48 @@ public class FormaliseResponseAcceptanceServiceTest {
         );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void formaliseWhenResponseNotPresent() {
-        Claim claim = SampleClaim.builder().build();
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .formaliseOption(CCJ)
-            .build();
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.builder().build();
+            ResponseAcceptation responseAcceptation = ResponseAcceptation
+                .builder()
+                .formaliseOption(CCJ)
+                .build();
+            formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void formaliseCCJWhenResponseIsNotAdmissions() {
-        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+        assertThrows(IllegalStateException.class, () -> {
+            Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
 
-        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
+            Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
 
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .formaliseOption(CCJ)
-            .build();
+            ResponseAcceptation responseAcceptation = ResponseAcceptation
+                .builder()
+                .formaliseOption(CCJ)
+                .build();
 
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+            formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void formaliseSettlementWhenResponseIsNotAdmissions() {
-        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+        assertThrows(IllegalStateException.class, () -> {
+            Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
 
-        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
+            Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
 
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .formaliseOption(SETTLEMENT)
-            .build();
+            ResponseAcceptation responseAcceptation = ResponseAcceptation
+                .builder()
+                .formaliseOption(SETTLEMENT)
+                .build();
 
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+            formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        });
     }
 
     @Test

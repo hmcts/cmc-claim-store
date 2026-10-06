@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -15,6 +15,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 
@@ -31,7 +32,7 @@ public class InterestContentProviderTest {
         new InterestCalculationService(Clock.systemDefaultZone())
     );
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         interest = claim.getClaimData().getInterest();
         interestDate = claim.getClaimData().getInterest().getInterestDate();
@@ -39,24 +40,32 @@ public class InterestContentProviderTest {
         issuedOn = ISSUE_DATE;
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullInterest() {
-        provider.createContent(null, interestDate, claimAmount, issuedOn, issuedOn);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null, interestDate, claimAmount, issuedOn, issuedOn);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullInterestDate() {
-        provider.createContent(interest, null, claimAmount, issuedOn, issuedOn);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(interest, null, claimAmount, issuedOn, issuedOn);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullClaimAmount() {
-        provider.createContent(interest, interestDate, null, issuedOn, issuedOn);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(interest, interestDate, null, issuedOn, issuedOn);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullIssuedOn() {
-        provider.createContent(interest, interestDate, claimAmount, null, null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(interest, interestDate, claimAmount, null, null);
+        });
     }
 
     @Test

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
@@ -37,13 +37,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final Claim CLAIM_HWF = SampleHwfClaim.getDefaultHwfPending();
@@ -83,7 +84,7 @@ public class PostClaimOrchestrationHandlerTest {
     @Mock
     private PrintableDocumentService printableDocumentService;
 
-    @Before
+    @BeforeEach
     public void before() {
         DocumentOrchestrationService documentOrchestrationService = new DocumentOrchestrationService(
             citizenServiceDocumentsService,
@@ -106,24 +107,24 @@ public class PostClaimOrchestrationHandlerTest {
             appInsights
         );
 
-        given(citizenServiceDocumentsService.sealedClaimDocument(any())).willReturn(sealedClaimLetterDocument);
-        given(sealedClaimPdfService.createPdf(any())).willReturn(new PDF(
+        lenient().when(citizenServiceDocumentsService.sealedClaimDocument(any())).thenReturn(sealedClaimLetterDocument);
+        lenient().when(sealedClaimPdfService.createPdf(any())).thenReturn(new PDF(
             "sealedClaim",
             PDF_BYTES,
             SEALED_CLAIM
         ));
-        given(claimIssueReceiptService.createPdf(any())).willReturn(new PDF(
+        lenient().when(claimIssueReceiptService.createPdf(any())).thenReturn(new PDF(
             "claimIssueReceipt",
             PDF_BYTES,
             CLAIM_ISSUE_RECEIPT
         ));
-        given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
+        lenient().when(pdfServiceClient.generateFromHtml(any(), anyMap())).thenReturn(PDF_BYTES);
 
-        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).willReturn(CLAIM);
-        given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
-        given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-        given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
+        lenient().when(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).thenReturn(CLAIM);
+        lenient().when(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).thenReturn(CLAIM);
+        lenient().when(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).thenReturn(CLAIM);
+        lenient().when(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).thenReturn(CLAIM);
+        lenient().when(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).thenReturn(CLAIM);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
@@ -28,7 +28,7 @@ public class ScheduledStateTransitionContentProviderTest {
 
     private ScheduledStateTransitionContentProvider contentProvider;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         contentProvider = new ScheduledStateTransitionContentProvider(
             templateService,

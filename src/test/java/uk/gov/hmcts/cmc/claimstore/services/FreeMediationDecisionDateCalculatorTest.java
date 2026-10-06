@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
@@ -13,7 +13,7 @@ public class FreeMediationDecisionDateCalculatorTest {
 
     private FreeMediationDecisionDateCalculator calculator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         calculator = new FreeMediationDecisionDateCalculator(DAYS_FOR_DECISION);
     }

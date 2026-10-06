@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.CaseMetadataController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -20,17 +20,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CaseMetadataControllerTest {
 
     @Mock
@@ -45,12 +47,12 @@ public class CaseMetadataControllerTest {
 
     private Claim sampleRepresentedClaim;
 
-    @Before
+    @BeforeEach
     public void setup() {
         controller = new CaseMetadataController(claimService, userService);
         sampleClaim = SampleClaim.getDefault();
         sampleRepresentedClaim = SampleClaim.getDefaultForLegal();
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
+        lenient().when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
     }
 
     @Test
@@ -95,16 +97,18 @@ public class CaseMetadataControllerTest {
         assertValid(sampleClaim, output);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void shouldThrowNotFoundExceptionWhenNoClaimWithReference() {
-        // given
-        when(claimService.getClaimByReferenceAnonymous("reference"))
-            .thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> {
+            // given
+            when(claimService.getClaimByReferenceAnonymous("reference"))
+                .thenReturn(Optional.empty());
 
-        // when
-        controller.getByClaimReference("reference");
+            // when
+            controller.getByClaimReference("reference");
 
-        // then exception should have been thrown
+            // then exception should have been thrown
+        });
     }
 
     @Test

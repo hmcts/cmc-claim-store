@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -28,9 +29,11 @@ public class ClaimDataContentProviderTest {
         )
     );
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullClaim() {
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null);
+        });
     }
 
     @Test

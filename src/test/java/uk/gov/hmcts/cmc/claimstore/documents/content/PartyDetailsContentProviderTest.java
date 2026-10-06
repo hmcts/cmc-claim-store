@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
@@ -57,14 +58,18 @@ public class PartyDetailsContentProviderTest {
             .individual();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullDefendant() {
-        provider.createContent(null, amendedDetails(), null, null, null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null, amendedDetails(), null, null, null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullDefendantDetails() {
-        provider.createContent(defendant, null, null, null, null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(defendant, null, null, null, null);
+        });
     }
 
     @Test

@@ -1,10 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceEnteredFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceLiftedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
@@ -25,14 +26,18 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 
 public class DocumentNameUtilsTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowErrorWhenNumberIsNullWhileBuildingSealedClaimFileBaseName() {
-        buildSealedClaimFileBaseName(null);
+        assertThrows(NullPointerException.class, () -> {
+            buildSealedClaimFileBaseName(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowErrorWhenNumberIsEmptyWhileBuildingSealedClaimFileBaseName() {
-        buildSealedClaimFileBaseName("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            buildSealedClaimFileBaseName("");
+        });
     }
 
     @Test
@@ -47,14 +52,18 @@ public class DocumentNameUtilsTest {
             .isEqualTo("draft-claim-externalId");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowErrorWhenNumberIsNullWhileBuildingDefendantLetterFileBaseName() {
-        buildDefendantLetterFileBaseName(null);
+        assertThrows(NullPointerException.class, () -> {
+            buildDefendantLetterFileBaseName(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowErrorWhenNumberIsEmptyWhileBuildingDefendantLetterFileBaseName() {
-        buildDefendantLetterFileBaseName("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            buildDefendantLetterFileBaseName("");
+        });
     }
 
     @Test
@@ -63,14 +72,18 @@ public class DocumentNameUtilsTest {
             .isEqualTo("000MC001-defendant-pin-letter");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowErrorWhenFilenameIsNullWhileCheckingWhetherFilenameIndicatesSealedClaim() {
-        isSealedClaim(null);
+        assertThrows(NullPointerException.class, () -> {
+            isSealedClaim(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowErrorWhenFilenameIsEmptyWhileCheckingWhetherFilenameIndicatesSealedClaim() {
-        isSealedClaim("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            isSealedClaim("");
+        });
     }
 
     @Test
@@ -85,14 +98,18 @@ public class DocumentNameUtilsTest {
             .isFalse();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowErrorWhenReferenceIsNullWhileBuildingReviewOrderFileBaseName() {
-        buildReviewOrderFileBaseName(null);
+        assertThrows(NullPointerException.class, () -> {
+            buildReviewOrderFileBaseName(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderFileBaseName() {
-        buildReviewOrderFileBaseName("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            buildReviewOrderFileBaseName("");
+        });
     }
 
     @Test

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PostHwfClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final Claim UPDATEDCLAIM = SampleClaim.getDefaultWithClaimStateAsCreate();
@@ -76,7 +76,7 @@ public class PostHwfClaimOrchestrationHandlerTest {
     @Mock
     private PrintableDocumentService printableDocumentService;
 
-    @Before
+    @BeforeEach
     public void before() {
         DocumentOrchestrationService documentOrchestrationService = new DocumentOrchestrationService(
             citizenServiceDocumentsService,

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -30,12 +30,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
@@ -43,7 +45,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LET
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.PIN_LETTER_TO_DEFENDANT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PinOrchestrationServiceTest {
     private static final Claim CLAIM = SampleClaim.getDefault();
     private static final String AUTHORISATION = "AUTHORISATION";
@@ -108,7 +110,7 @@ public class PinOrchestrationServiceTest {
     @Mock
     private LaunchDarklyClient launchDarklyClient;
 
-    @Before
+    @BeforeEach
     public void before() {
         pinOrchestrationService = new PinOrchestrationService(
             bulkPrintService,
@@ -120,19 +122,19 @@ public class PinOrchestrationServiceTest {
             claimService,
             launchDarklyClient);
 
-        given(notificationsProperties.getTemplates()).willReturn(templates);
-        given(templates.getEmail()).willReturn(emailTemplates);
-        given(emailTemplates.getDefendantClaimIssued()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
+        lenient().when(notificationsProperties.getTemplates()).thenReturn(templates);
+        lenient().when(templates.getEmail()).thenReturn(emailTemplates);
+        lenient().when(emailTemplates.getDefendantClaimIssued()).thenReturn(DEFENDANT_EMAIL_TEMPLATE);
 
-        given(bulkPrintService
+        lenient().when(bulkPrintService
             .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION), eq(USER_LIST)))
-            .willReturn(bulkPrintDetails);
-        given(bulkPrintService
+            .thenReturn(bulkPrintDetails);
+        lenient().when(bulkPrintService
             .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION), eq(USER_LIST)))
-            .willReturn(bulkPrintDetails);
-        given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
+            .thenReturn(bulkPrintDetails);
+        lenient().when(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
             eq(ADD_BULK_PRINT_DETAILS), eq(CLAIM)))
-            .willReturn(claimWithBulkPrintDetails);
+            .thenReturn(claimWithBulkPrintDetails);
     }
 
     @Test
@@ -175,67 +177,73 @@ public class PinOrchestrationServiceTest {
             eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void updatePinOperationStatusWhenBulkPrintFailsForNewPinLetter() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
-            .willReturn(generatedDocuments);
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
+                .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
-            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
+            doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
+                any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
 
-        //when
-        try {
-            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+            //when
+            try {
+                pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
-        } finally {
-            //then
-            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-        }
+            } finally {
+                //then
+                verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                    eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            }
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void updatePinOperationStatusWhenClaimIssueNotificationFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
-            .willReturn(generatedDocuments);
-        doThrow(new RuntimeException("claim issue notification failed"))
-            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
-        //when
-        try {
-            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
-        } finally {
-            //then
-            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
-                .bulkPrint(YesNoOption.YES)
-                .build();
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
+                .willReturn(generatedDocuments);
+            doThrow(new RuntimeException("claim issue notification failed"))
+                .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
+            //when
+            try {
+                pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+            } finally {
+                //then
+                ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                    .bulkPrint(YesNoOption.YES)
+                    .build();
 
-            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-        }
+                verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                    eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            }
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void updatePinOperationStatusWhenNotifyDefendantFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
-            .willReturn(generatedDocuments);
-        doThrow(new RuntimeException("claim issue notification failed"))
-            .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
-        //when
-        try {
-            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
-        } finally {
-            //then
-            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
-                .bulkPrint(YesNoOption.YES)
-                .staffNotification(YesNoOption.YES)
-                .build();
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
+                .willReturn(generatedDocuments);
+            doThrow(new RuntimeException("claim issue notification failed"))
+                .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
+            //when
+            try {
+                pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+            } finally {
+                //then
+                ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                    .bulkPrint(YesNoOption.YES)
+                    .staffNotification(YesNoOption.YES)
+                    .build();
 
-            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-        }
+                verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                    eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            }
+        });
     }
 
     @Test
@@ -278,24 +286,26 @@ public class PinOrchestrationServiceTest {
             eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void updatePinOperationStatusWhenBulkPrintFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), false))
-            .willReturn(generatedDocuments);
-        given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), false))
+                .willReturn(generatedDocuments);
+            given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
-            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
+            doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
+                any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
 
-        //when
-        try {
-            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+            //when
+            try {
+                pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
-        } finally {
-            //then
-            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-        }
+            } finally {
+                //then
+                verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                    eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            }
+        });
     }
 }

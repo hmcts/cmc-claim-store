@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailSendException;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 //As no more java mail sender in place and sendgrid covers this.
-@Ignore
+@Disabled
 public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
@@ -42,7 +42,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends
     @Autowired
     private PaidInFullStaffNotificationService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_CONTENT);
     }

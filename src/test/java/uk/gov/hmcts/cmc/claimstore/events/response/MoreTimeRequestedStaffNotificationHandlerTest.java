@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
@@ -15,12 +15,12 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MoreTimeRequestedStaffNotificationHandlerTest {
 
     private static final String STAFF_EMAIL_ADDRESS = "staff@example.com";
@@ -40,13 +40,13 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_EMAIL_ADDRESS);
+        lenient().when(staffEmailProperties.getRecipient()).thenReturn(STAFF_EMAIL_ADDRESS);
 
-        when(notificationsProperties.getTemplates()).thenReturn(templates);
-        when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getStaffMoreTimeRequested()).thenReturn(STAFF_TEMPLATE_ID);
+        lenient().when(notificationsProperties.getTemplates()).thenReturn(templates);
+        lenient().when(templates.getEmail()).thenReturn(emailTemplates);
+        lenient().when(emailTemplates.getStaffMoreTimeRequested()).thenReturn(STAFF_TEMPLATE_ID);
     }
 
     @Test

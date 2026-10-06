@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserRolesServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String USER_ID = "11";
@@ -41,7 +41,7 @@ public class UserRolesServiceTest {
     private UserRolesService userRolesService;
     private final UserRole authorizedUserRole = new UserRole(USER_ID, CONSENT_GIVEN_ROLE);
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(new User(AUTHORISATION, claimantDetails));
 

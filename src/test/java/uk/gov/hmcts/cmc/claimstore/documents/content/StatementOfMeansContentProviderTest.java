@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
@@ -14,14 +14,17 @@ import java.util.Map;
 import static java.math.BigDecimal.TEN;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class StatementOfMeansContentProviderTest {
 
     private final StatementOfMeansContentProvider provider = new StatementOfMeansContentProvider();
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null);
+        });
     }
 
     @Test

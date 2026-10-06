@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFEND
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SettlementAgreementServiceTest {
 
     private static final String AUTHORISATION = "Bearer aaa";
@@ -51,7 +52,7 @@ public class SettlementAgreementServiceTest {
     @Mock
     private AppInsights appInsights;
 
-    @Before
+    @BeforeEach
     public void setup() {
         settlementAgreementService =
             new SettlementAgreementService(claimService, caseRepository, eventProducer, appInsights);
@@ -70,22 +71,28 @@ public class SettlementAgreementServiceTest {
             eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void shouldRaiseConflictExceptionOnSettlementAgreementAlreadyRejected() {
-        Claim claimWithSettlementAgreementRejected = buildClaimWithSettlementAgreementRejected();
-        settlementAgreementService.reject(claimWithSettlementAgreementRejected, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            Claim claimWithSettlementAgreementRejected = buildClaimWithSettlementAgreementRejected();
+            settlementAgreementService.reject(claimWithSettlementAgreementRejected, AUTHORISATION);
+        });
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void shouldRaiseConflictExceptionOnClaimWithNoSettlement() {
-        Claim claim = SampleClaim.builder().build();
-        settlementAgreementService.reject(claim, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            Claim claim = SampleClaim.builder().build();
+            settlementAgreementService.reject(claim, AUTHORISATION);
+        });
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void shouldRaiseConflictExceptionOnRejectWhenSettlementAgreementAlreadyReached() {
-        Claim claim = buildClaimWithSettlementReached();
-        settlementAgreementService.reject(claim, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            Claim claim = buildClaimWithSettlementReached();
+            settlementAgreementService.reject(claim, AUTHORISATION);
+        });
     }
 
     @Test
@@ -125,10 +132,12 @@ public class SettlementAgreementServiceTest {
 
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void shouldRaiseConflictExceptionWhenCountersigningAgreementAlreadyRejected() {
-        Claim claim = buildClaimWithSettlementAgreementRejected();
-        settlementAgreementService.countersign(claim, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            Claim claim = buildClaimWithSettlementAgreementRejected();
+            settlementAgreementService.countersign(claim, AUTHORISATION);
+        });
     }
 
     @Test
@@ -149,17 +158,19 @@ public class SettlementAgreementServiceTest {
         verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void signSettlementAgreementShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        // given
-        Claim settledClaim = SampleClaim.builder()
-            .withSettlementReachedAt(LocalDateTime.now()).build();
-        when(claimService.getClaimByExternalId(eq(settledClaim.getExternalId()),
-            eq(AUTHORISATION))).thenReturn(settledClaim);
+        assertThrows(ConflictException.class, () -> {
+            // given
+            Claim settledClaim = SampleClaim.builder()
+                .withSettlementReachedAt(LocalDateTime.now()).build();
+            when(claimService.getClaimByExternalId(eq(settledClaim.getExternalId()),
+                eq(AUTHORISATION))).thenReturn(settledClaim);
 
-        //when
-        settlementAgreementService.signSettlementAgreement(settledClaim.getExternalId(),
-            buildSettlement(), AUTHORISATION);
+            //when
+            settlementAgreementService.signSettlementAgreement(settledClaim.getExternalId(),
+                buildSettlement(), AUTHORISATION);
+        });
     }
 
     private Claim buildClaimWithSettlementAgreementOffer() {

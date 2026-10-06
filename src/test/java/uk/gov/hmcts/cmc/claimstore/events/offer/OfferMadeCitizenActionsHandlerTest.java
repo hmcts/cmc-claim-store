@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.offer;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -17,10 +17,11 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OfferMadeCitizenActionsHandlerTest {
 
     private static final String FRONTEND_URL = "domain";
@@ -43,15 +44,15 @@ public class OfferMadeCitizenActionsHandlerTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(offerResponseDeadlineCalculator.calculateOfferResponseDeadline(any())).thenReturn(LocalDate.now());
 
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getDefendantOfferMade()).thenReturn(DEFENDANT_TEMPLATE_ID);
-        when(emailTemplates.getClaimantOfferMade()).thenReturn(CLAIMANT_TEMPLATE_ID);
+        lenient().when(emailTemplates.getDefendantOfferMade()).thenReturn(DEFENDANT_TEMPLATE_ID);
+        lenient().when(emailTemplates.getClaimantOfferMade()).thenReturn(CLAIMANT_TEMPLATE_ID);
 
         handler = new OfferMadeCitizenActionsHandler(
             notificationService,

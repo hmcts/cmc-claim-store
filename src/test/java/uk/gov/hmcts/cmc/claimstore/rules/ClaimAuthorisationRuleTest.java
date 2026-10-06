@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -13,9 +13,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimAuthorisationRuleTest {
 
     private static final String AUTHORISATION_TOKEN = "1";
@@ -29,9 +31,9 @@ public class ClaimAuthorisationRuleTest {
 
     private ClaimAuthorisationRule claimAuthorisationRule;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(sampleDetails);
+        lenient().when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(sampleDetails);
         claimAuthorisationRule = new ClaimAuthorisationRule(userService);
     }
 
@@ -59,14 +61,16 @@ public class ClaimAuthorisationRuleTest {
             .doesNotThrowAnyException();
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowForbiddenActionExceptionWhenAuthorisationMatchesNoId() {
-        Claim claim = SampleClaim.builder()
-            .withSubmitterId(FAILING_USER_ID)
-            .withDefendantId(FAILING_USER_ID)
-            .withLetterHolderId(FAILING_USER_ID)
-            .build();
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, AUTHORISATION_TOKEN);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withSubmitterId(FAILING_USER_ID)
+                .withDefendantId(FAILING_USER_ID)
+                .withLetterHolderId(FAILING_USER_ID)
+                .build();
+            claimAuthorisationRule.assertClaimCanBeAccessed(claim, AUTHORISATION_TOKEN);
+        });
     }
 
     @Test
@@ -75,9 +79,11 @@ public class ClaimAuthorisationRuleTest {
             AUTHORISATION_TOKEN)).doesNotThrowAnyException();
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowForbiddenActionExceptionWhenUserIdDoesNotMatchAuthorisation() {
-        claimAuthorisationRule.assertUserIdMatchesAuthorisation(FAILING_USER_ID, AUTHORISATION_TOKEN);
+        assertThrows(ForbiddenActionException.class, () -> {
+            claimAuthorisationRule.assertUserIdMatchesAuthorisation(FAILING_USER_ID, AUTHORISATION_TOKEN);
+        });
     }
 
     @Test

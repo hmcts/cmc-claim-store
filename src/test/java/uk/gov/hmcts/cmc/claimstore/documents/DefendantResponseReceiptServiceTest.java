@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefendantResponseReceiptServiceTest {
 
     @Mock
@@ -27,7 +27,7 @@ public class DefendantResponseReceiptServiceTest {
 
     private DefendantResponseReceiptService defendantResponseReceiptService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         defendantResponseReceiptService = new DefendantResponseReceiptService(
             contentProvider,
@@ -41,7 +41,7 @@ public class DefendantResponseReceiptServiceTest {
         Claim claim = SampleClaim.builder().build();
         try {
             defendantResponseReceiptService.createPdf(claim);
-            Assert.fail("Expected a NotFoundException to be thrown");
+            Assertions.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Defendant response does not exist for this claim");
         }

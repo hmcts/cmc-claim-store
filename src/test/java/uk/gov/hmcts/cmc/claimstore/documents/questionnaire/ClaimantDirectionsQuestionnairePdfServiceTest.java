@@ -1,20 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.documents.questionnaire;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.ClaimantDirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimantDirectionsQuestionnairePdfServiceTest {
 
     @Mock
@@ -25,7 +26,7 @@ public class ClaimantDirectionsQuestionnairePdfServiceTest {
 
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         claimantDirectionsQuestionnairePdfService = new ClaimantDirectionsQuestionnairePdfService(
             new DocumentTemplates(),
@@ -34,14 +35,18 @@ public class ClaimantDirectionsQuestionnairePdfServiceTest {
         );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void createPdfThrowsExceptionWhenResponseIsNull() {
-        claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getDefault());
+        assertThrows(IllegalStateException.class, () -> {
+            claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getDefault());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void createPdfThrowsExceptionWhenResponseIsAcceptation() {
-        claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getWithClaimantResponse());
+        assertThrows(IllegalArgumentException.class, () -> {
+            claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getWithClaimantResponse());
+        });
     }
 
     @Test

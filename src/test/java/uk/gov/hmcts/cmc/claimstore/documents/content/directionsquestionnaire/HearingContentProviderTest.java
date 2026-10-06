@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ExpertReportContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
@@ -17,8 +17,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 
@@ -30,9 +31,11 @@ public class HearingContentProviderTest {
     private final String yes = "Yes";
     private final String no = "No";
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapDirectionsQuestionnaireThrowsException() {
-        hearingContentProvider.mapDirectionQuestionnaire(null);
+        assertThrows(NullPointerException.class, () -> {
+            hearingContentProvider.mapDirectionQuestionnaire(null);
+        });
     }
 
     @Test
@@ -126,15 +129,15 @@ public class HearingContentProviderTest {
 
     private void compareSupportRequired(RequireSupport supportRequired, List<String> mappedSupport) {
         supportRequired.getDisabledAccess()
-            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(disabledAccess)));
+            .ifPresent(val -> Assertions.assertTrue(mappedSupport.contains(disabledAccess)));
         supportRequired.getOtherSupport()
-            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(val)));
+            .ifPresent(val -> Assertions.assertTrue(mappedSupport.contains(val)));
         supportRequired.getSignLanguageInterpreter()
-            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(val)));
+            .ifPresent(val -> Assertions.assertTrue(mappedSupport.contains(val)));
         supportRequired.getLanguageInterpreter()
-            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(val)));
+            .ifPresent(val -> Assertions.assertTrue(mappedSupport.contains(val)));
         supportRequired.getHearingLoop()
-            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(hearingLoop)));
+            .ifPresent(val -> Assertions.assertTrue(mappedSupport.contains(hearingLoop)));
     }
 
     private Object[] unavailabeDatesToISOString(List<UnavailableDate> unavailableDates) {

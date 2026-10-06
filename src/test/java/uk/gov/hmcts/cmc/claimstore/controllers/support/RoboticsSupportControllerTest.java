@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -36,16 +36,18 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RoboticsSupportControllerTest {
     private static final GeneratePinResponse PIN_RESPONSE = new GeneratePinResponse("pin", "userid");
     private static final UserDetails USER_DETAILS = new UserDetails(
@@ -73,7 +75,7 @@ public class RoboticsSupportControllerTest {
 
     private RoboticsSupportController controller;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.controller = new RoboticsSupportController(
             claimService,
@@ -86,59 +88,79 @@ public class RoboticsSupportControllerTest {
             appInsightsExceptionLogger,
             documentGenerator
         );
-        when(userService.authenticateAnonymousCaseWorker())
+        lenient().when(userService.authenticateAnonymousCaseWorker())
             .thenReturn(new User("authorisation", USER_DETAILS));
-        when(userService.getUserDetails("authorisation")).thenReturn(USER_DETAILS);
+        lenient().when(userService.getUserDetails("authorisation")).thenReturn(USER_DETAILS);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_ClaimNotifications_NullArgument() {
-        controller.rpaClaimNotifications(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaClaimNotifications(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_MoreTimeNotifications_NullArgument() {
-        controller.rpaMoreTimeNotifications(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaMoreTimeNotifications(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_ResponseNotifications_NullArgument() {
-        controller.rpaResponseNotifications(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaResponseNotifications(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_CCJNotifications_NullArgument() {
-        controller.rpaCCJNotifications(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaCCJNotifications(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_PIFNotifications_NullArgument() {
-        controller.rpaPIFNotifications(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaPIFNotifications(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_ClaimNotifications_EmptyArgument() {
-        controller.rpaClaimNotifications(emptyList());
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaClaimNotifications(emptyList());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_MoreTimeNotifications_EmptyArgument() {
-        controller.rpaMoreTimeNotifications(emptyList());
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaMoreTimeNotifications(emptyList());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_ResponseNotifications_EmptyArgument() {
-        controller.rpaResponseNotifications(emptyList());
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaResponseNotifications(emptyList());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_CCJNotifications_EmptyArgument() {
-        controller.rpaCCJNotifications(emptyList());
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaCCJNotifications(emptyList());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRPA_PIFNotifications_EmptyArgument() {
-        controller.rpaPIFNotifications(emptyList());
+        assertThrows(IllegalArgumentException.class, () -> {
+            controller.rpaPIFNotifications(emptyList());
+        });
     }
 
     @Test
@@ -150,7 +172,7 @@ public class RoboticsSupportControllerTest {
             .thenReturn(Optional.of(claim2));
 
         when(userService.generatePin(anyString(), anyString())).thenReturn(PIN_RESPONSE);
-        when(claimService.linkLetterHolder(eq(claim2), anyString())).thenThrow(new RuntimeException(
+        lenient().when(claimService.linkLetterHolder(eq(claim2), anyString())).thenThrow(new RuntimeException(
             "reason"));
 
         Map<String, String> results = controller.rpaClaimNotifications(asList("000MC001", "000MC002", "000MC003"));

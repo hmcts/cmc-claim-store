@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -42,7 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BulkPrintServiceTest {
     private static final String AUTH_VALUE = "AuthValue";
     private static final Claim CLAIM = SampleClaim.getDefault();
@@ -72,9 +74,9 @@ public class BulkPrintServiceTest {
     @Mock
     private PDFServiceClient pdfServiceClient;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
-        when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
+        lenient().when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
         additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, CLAIM.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, CLAIM.getReferenceNumber());
@@ -172,73 +174,77 @@ public class BulkPrintServiceTest {
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldNotifyStaffOnPrintFailure() {
-        //given
-        doThrow(new RuntimeException("send Letter failed"))
-            .when(sendLetterApi)
-            .sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            doThrow(new RuntimeException("send Letter failed"))
+                .when(sendLetterApi)
+                .sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
 
-        //when
-        bulkPrintService = new BulkPrintService(
-            sendLetterApi,
-            authTokenGenerator,
-            bulkPrintStaffNotificationService,
-            appInsights,
-            pdfServiceClient
-        );
+            //when
+            bulkPrintService = new BulkPrintService(
+                sendLetterApi,
+                authTokenGenerator,
+                bulkPrintStaffNotificationService,
+                appInsights,
+                pdfServiceClient
+            );
 
-        try {
-            bulkPrintService.printHtmlLetter(
-                CLAIM,
-                ImmutableList.of(
-                    new PrintableTemplate(defendantLetterDocument, "filename"),
-                    new PrintableTemplate(sealedClaimDocument, "filename")
-                ),
-                FIRST_CONTACT_LETTER_TYPE,
-                AUTHORISATION,
-                USER_LIST);
-        } finally {
-            //then
-            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
-        }
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void recoveryThrowWhenAsyncEnabled() {
-        //given
-        RuntimeException exception = new RuntimeException("send Letter failed");
-
-        //when
-        bulkPrintService = new BulkPrintService(
-            sendLetterApi,
-            authTokenGenerator,
-            bulkPrintStaffNotificationService,
-            appInsights,
-            pdfServiceClient
-        );
-        ReflectionTestUtils.setField(bulkPrintService,
-            "feature_toggles.async_event_operations_enabled",
-            true);
-        try {
-            bulkPrintService
-                .notifyStaffForBulkPrintFailure(
-                    exception,
+            try {
+                bulkPrintService.printHtmlLetter(
                     CLAIM,
                     ImmutableList.of(
                         new PrintableTemplate(defendantLetterDocument, "filename"),
                         new PrintableTemplate(sealedClaimDocument, "filename")
-                    ));
-        } finally {
-            //then
-            verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
-                eq(ImmutableList.of(
-                    new PrintableTemplate(defendantLetterDocument, "filename"),
-                    new PrintableTemplate(sealedClaimDocument, "filename"))),
-                eq(CLAIM)
-            );
+                    ),
+                    FIRST_CONTACT_LETTER_TYPE,
+                    AUTHORISATION,
+                    USER_LIST);
+            } finally {
+                //then
+                verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
+            }
+        });
+    }
 
-            verify(appInsights).trackEvent(eq(BULK_PRINT_FAILED), eq(REFERENCE_NUMBER), eq(CLAIM.getReferenceNumber()));
-        }
+    @Test
+    public void recoveryThrowWhenAsyncEnabled() {
+        assertThrows(RuntimeException.class, () -> {
+            //given
+            RuntimeException exception = new RuntimeException("send Letter failed");
+
+            //when
+            bulkPrintService = new BulkPrintService(
+                sendLetterApi,
+                authTokenGenerator,
+                bulkPrintStaffNotificationService,
+                appInsights,
+                pdfServiceClient
+            );
+            ReflectionTestUtils.setField(bulkPrintService,
+                "feature_toggles.async_event_operations_enabled",
+                true);
+            try {
+                bulkPrintService
+                    .notifyStaffForBulkPrintFailure(
+                        exception,
+                        CLAIM,
+                        ImmutableList.of(
+                            new PrintableTemplate(defendantLetterDocument, "filename"),
+                            new PrintableTemplate(sealedClaimDocument, "filename")
+                        ));
+            } finally {
+                //then
+                verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
+                    eq(ImmutableList.of(
+                        new PrintableTemplate(defendantLetterDocument, "filename"),
+                        new PrintableTemplate(sealedClaimDocument, "filename"))),
+                    eq(CLAIM)
+                );
+
+                verify(appInsights).trackEvent(eq(BULK_PRINT_FAILED), eq(REFERENCE_NUMBER), eq(CLAIM.getReferenceNumber()));
+            }
+        });
     }
 }

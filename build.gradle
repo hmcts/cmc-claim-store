@@ -329,7 +329,6 @@ dependencies {
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
   testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-  testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine'
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons'
   testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine'

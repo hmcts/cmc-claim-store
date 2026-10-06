@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentGeneratorTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private final String authorisation = "AuthValue";
@@ -55,7 +55,7 @@ public class DocumentGeneratorTest {
     @Mock
     private LaunchDarklyClient launchDarklyClient;
 
-    @Before
+    @BeforeEach
     public void before() {
         documentGenerator = new DocumentGenerator(citizenDocumentService,
             sealedClaimPdfService,

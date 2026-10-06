@@ -1,14 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -33,9 +35,10 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,7 +47,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class SecuredDocumentManagementServiceTest {
 
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
@@ -71,7 +75,7 @@ public class SecuredDocumentManagementServiceTest {
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         securedDocumentManagementService = new SecuredDocumentManagementService(
@@ -97,36 +101,39 @@ public class SecuredDocumentManagementServiceTest {
             .thenReturn(null).thenThrow(new DocumentUploadException("originalFileName"));
     }
 
-    @Test(expected = DocumentUploadException.class)
+    @Test
     public void shouldUploadToDocumentManagementAndRaiseException() {
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        assertThrows(DocumentUploadException.class, () -> {
+            UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+                "userFirstName", "userLastName", Collections.singletonList("role"));
+            when(userService.getUserDetails(anyString())).thenReturn(userDetails);
 
-        UploadResponse response = new UploadResponse(List.of(caseDocument));
+            UploadResponse response = new UploadResponse(List.of(caseDocument));
 
-        when(caseDocumentClientApi
-            .uploadDocuments(anyString(),
-                anyString(),
-                any(DocumentUploadRequest.class)))
-            .thenReturn(response);
+            when(caseDocumentClientApi
+                .uploadDocuments(anyString(),
+                    anyString(),
+                    any(DocumentUploadRequest.class)))
+                .thenReturn(response);
 
-        securedDocumentManagementService
-            .uploadDocument("authString", this.document);
+            securedDocumentManagementService
+                .uploadDocument("authString", this.document);
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldDownloadScannedDocumentFromDocumentManagementWhenResponseEntityIsNull() {
+        assertThrows(RuntimeException.class, () -> {
+            URI docUri = setupDocumentDownloadClientNullRespEntity();
 
-        URI docUri = setupDocumentDownloadClientNullRespEntity();
+            ScannedDocument claimDocument = ScannedDocument.builder()
+                .documentManagementUrl(docUri)
+                .build();
 
-        ScannedDocument claimDocument = ScannedDocument.builder()
-            .documentManagementUrl(docUri)
-            .build();
+            byte[] pdf = securedDocumentManagementService.downloadScannedDocument("auth string", claimDocument);
 
-        byte[] pdf = securedDocumentManagementService.downloadScannedDocument("auth string", claimDocument);
-
-        assertDocumentDownloadSuccessful(pdf);
+            assertDocumentDownloadSuccessful(pdf);
+        });
     }
 
     @Test
@@ -263,28 +270,30 @@ public class SecuredDocumentManagementServiceTest {
         return URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
 
-    @Test(expected = DocumentDownloadException.class)
+    @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
-        URI docUri = mock(URI.class);
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        assertThrows(DocumentDownloadException.class, () -> {
+            URI docUri = mock(URI.class);
+            UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+                "userFirstName", "userLastName", Collections.singletonList("role"));
+            when(userService.getUserDetails(anyString())).thenReturn(userDetails);
 
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-        ).thenReturn(null);
+            when(documentMetadataDownloadClient
+                .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+            ).thenReturn(null);
 
-        ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(docUri)
-            .documentName("0000-claim")
-            .build();
-        try {
-            securedDocumentManagementService.downloadDocument("auth string", claimDocument);
-            Assert.fail("Expected a DocumentManagementException to be thrown");
-        } catch (DocumentManagementException expected) {
-            assertThat(expected).hasMessage(String.format("Unable to download document %s from document management.",
-                docUri));
-        }
+            ClaimDocument claimDocument = ClaimDocument.builder()
+                .documentManagementUrl(docUri)
+                .documentName("0000-claim")
+                .build();
+            try {
+                securedDocumentManagementService.downloadDocument("auth string", claimDocument);
+                Assertions.fail("Expected a DocumentManagementException to be thrown");
+            } catch (DocumentManagementException expected) {
+                assertThat(expected).hasMessage(String.format("Unable to download document %s from document management.",
+                    docUri));
+            }
+        });
     }
 
     @Test

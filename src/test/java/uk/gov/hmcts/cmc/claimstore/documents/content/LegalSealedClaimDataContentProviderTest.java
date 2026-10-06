@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -12,8 +12,9 @@ import java.math.BigInteger;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LegalSealedClaimDataContentProviderTest {
     @Mock
     private StatementOfValueProvider statementOfValueProvider;
@@ -50,13 +51,15 @@ public class LegalSealedClaimDataContentProviderTest {
         assertThat(contents).isNotEmpty().containsKey("watermarkPdf");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenMissingIssuedDate() {
-        Claim claim = SampleClaim.getDefaultForLegal().toBuilder().issuedOn(null).build();
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.getDefaultForLegal().toBuilder().issuedOn(null).build();
 
-        LegalSealedClaimContentProvider legalSealedClaimContentProvider
-            = new LegalSealedClaimContentProvider(statementOfValueProvider, false);
+            LegalSealedClaimContentProvider legalSealedClaimContentProvider
+                = new LegalSealedClaimContentProvider(statementOfValueProvider, false);
 
-        legalSealedClaimContentProvider.createContent(claim);
+            legalSealedClaimContentProvider.createContent(claim);
+        });
     }
 }

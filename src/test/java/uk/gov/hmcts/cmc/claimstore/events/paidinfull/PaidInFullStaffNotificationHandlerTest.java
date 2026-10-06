@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -12,7 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PaidInFullStaffNotificationHandlerTest {
 
     private static final PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
@@ -22,7 +22,7 @@ public class PaidInFullStaffNotificationHandlerTest {
     @Mock
     PaidInFullStaffNotificationService paidInFullStaffNotificationService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         handler = new PaidInFullStaffNotificationHandler(paidInFullStaffNotificationService);
     }

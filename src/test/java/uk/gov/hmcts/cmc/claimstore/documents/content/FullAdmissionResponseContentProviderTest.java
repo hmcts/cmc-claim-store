@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission.builder;
 
 public class FullAdmissionResponseContentProviderTest {
@@ -17,9 +18,11 @@ public class FullAdmissionResponseContentProviderTest {
             new StatementOfMeansContentProvider()
         );
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        provider.createContent(null, BigDecimal.ZERO);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null, BigDecimal.ZERO);
+        });
     }
 
     @Test

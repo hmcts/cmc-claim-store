@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +58,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CreateCitizenClaimCallbackHandlerTest {
     private static final String REFERENCE_NO = "000MC001";
     private static final String REFERENCE_NO_HWF = "1595459870527766";
@@ -101,7 +102,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     private Payment.PaymentBuilder paymentBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         paymentBuilder = Payment.builder()
             .amount(TEN)
@@ -126,9 +127,9 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .caseDetails(caseDetails)
             .build();
 
-        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
-        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
+        lenient().when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
+        lenient().when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
+        lenient().when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
     }
 
     @Test

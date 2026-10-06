@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.LegalSealedClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SealedClaimPdfServiceTest {
 
     @Mock
@@ -26,14 +27,16 @@ public class SealedClaimPdfServiceTest {
 
     private SealedClaimPdfService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         service = new SealedClaimPdfService(documentTemplates, pdfServiceClient, contentProvider, documentsService);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.createPdf(null);
+        });
     }
 
     @Test

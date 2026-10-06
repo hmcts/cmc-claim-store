@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
@@ -17,11 +17,13 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LegalOrderCoverSheetContentProviderTest {
     private static final String STAFF_NOTIFICATIONS_RECIPIENT = "email@domain.gov";
 
@@ -35,27 +37,31 @@ public class LegalOrderCoverSheetContentProviderTest {
     @Mock
     private LaunchDarklyClient launchDarklyClient;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         provider = new LegalOrderCoverSheetContentProvider(
             staffEmailProperties,
             false,
             launchDarklyClient
         );
-        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
-        when(launchDarklyClient.isFeatureEnabled(eq("legal-order-alignment"), any(LDUser.class))).thenReturn(true);
+        lenient().when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
+        lenient().when(launchDarklyClient.isFeatureEnabled(eq("legal-order-alignment"), any(LDUser.class))).thenReturn(true);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaimForClaimant() {
-        //noinspection ConstantConditions
-        provider.createContentForClaimant(null);
+        assertThrows(NullPointerException.class, () -> {
+            //noinspection ConstantConditions
+            provider.createContentForClaimant(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaimForDefendant() {
-        //noinspection ConstantConditions
-        provider.createContentForDefendant(null);
+        assertThrows(NullPointerException.class, () -> {
+            //noinspection ConstantConditions
+            provider.createContentForDefendant(null);
+        });
     }
 
     @Test

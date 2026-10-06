@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.offer;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -16,11 +16,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OfferRespondedCitizenActionsHandlerTest {
 
     private static final String FRONTEND_URL = "domain";
@@ -42,15 +43,15 @@ public class OfferRespondedCitizenActionsHandlerTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getOfferAcceptedByClaimantEmailToDefendant()).thenReturn(OFFER_ACCEPTED_TO_DEFENDANT);
-        when(emailTemplates.getOfferAcceptedByClaimantEmailToClaimant()).thenReturn(OFFER_ACCEPTED_TO_CLAIMANT);
-        when(emailTemplates.getOfferRejectedByClaimantEmailToDefendant()).thenReturn(OFFER_REJECTED_TO_DEFENDANT);
-        when(emailTemplates.getOfferRejectedByClaimantEmailToClaimant()).thenReturn(OFFER_REJECTED_TO_CLAIMANT);
+        lenient().when(emailTemplates.getOfferAcceptedByClaimantEmailToDefendant()).thenReturn(OFFER_ACCEPTED_TO_DEFENDANT);
+        lenient().when(emailTemplates.getOfferAcceptedByClaimantEmailToClaimant()).thenReturn(OFFER_ACCEPTED_TO_CLAIMANT);
+        lenient().when(emailTemplates.getOfferRejectedByClaimantEmailToDefendant()).thenReturn(OFFER_REJECTED_TO_DEFENDANT);
+        lenient().when(emailTemplates.getOfferRejectedByClaimantEmailToClaimant()).thenReturn(OFFER_REJECTED_TO_CLAIMANT);
 
         handler = new OfferRespondedCitizenActionsHandler(notificationService, notificationsProperties);
     }

@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -36,7 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -51,7 +52,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIO
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MediationFailedCallbackHandlerTest {
 
     @Mock
@@ -90,7 +91,7 @@ public class MediationFailedCallbackHandlerTest {
 
     //TODO Clean up these tests
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mediationFailedCallbackHandler = new MediationFailedCallbackHandler(
             caseDetailsConverter,
@@ -113,22 +114,26 @@ public class MediationFailedCallbackHandlerTest {
             .build();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void throwsExceptionIfNotDefenseOrFullAdmit() {
-        Claim claim = SampleClaim.getClaimWithFullAdmission();
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.getClaimWithFullAdmission();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
-        mediationFailedCallbackHandler.handle(callbackParams);
+            mediationFailedCallbackHandler.handle(callbackParams);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void throwsExceptionIfClaimantResponseAcceptation() {
-        Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
-        mediationFailedCallbackHandler.handle(callbackParams);
+            mediationFailedCallbackHandler.handle(callbackParams);
+        });
     }
 
     @Test

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,11 +28,12 @@ import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CountyCourtJudgmentRuleTest {
 
     @Captor
@@ -43,7 +44,7 @@ public class CountyCourtJudgmentRuleTest {
 
     private CountyCourtJudgmentRule countyCourtJudgmentRule;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         countyCourtJudgmentRule = new CountyCourtJudgmentRule(claimDeadlineService);
     }
@@ -56,17 +57,21 @@ public class CountyCourtJudgmentRuleTest {
         ).doesNotThrowAnyException();
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowExceptionWhenUserCannotRequestCountyCourtJudgmentBecauseDeadlineIsTomorrow() {
-        Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowExceptionWhenClaimWasResponded() {
-        Claim respondedClaim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(respondedClaim,
-            CountyCourtJudgmentType.DEFAULT);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim respondedClaim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(respondedClaim,
+                CountyCourtJudgmentType.DEFAULT);
+        });
     }
 
     @Test
@@ -79,37 +84,43 @@ public class CountyCourtJudgmentRuleTest {
         assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowExceptionWhenCountyCourtJudgmentWasAlreadySubmitted() {
-        Claim claim = SampleClaim.builder()
-            .withCountyCourtJudgmentRequestedAt(now())
-            .withCountyCourtJudgment(
-                SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
-                    .build()
-            ).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withCountyCourtJudgmentRequestedAt(now())
+                .withCountyCourtJudgment(
+                    SampleCountyCourtJudgment.builder()
+                        .paymentOption(PaymentOption.IMMEDIATELY)
+                        .build()
+                ).build();
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowExceptionWhenCountyCourtJudgmentWasForAdmissionResponse() {
-        Claim claim = SampleClaim.builder()
-            .withResponse(SampleResponse.validDefaults())
-            .withCountyCourtJudgmentRequestedAt(now())
-            .withCountyCourtJudgment(
-                SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
-                    .build()
-            ).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withResponse(SampleResponse.validDefaults())
+                .withCountyCourtJudgmentRequestedAt(now())
+                .withCountyCourtJudgment(
+                    SampleCountyCourtJudgment.builder()
+                        .paymentOption(PaymentOption.IMMEDIATELY)
+                        .build()
+                ).build();
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenCountyCourtJudgmentWasForAdmissionResponseThatHasNoResponse() {
-        Claim claim = SampleClaim.builder()
-            .withCountyCourtJudgmentRequestedAt(now())
-            .build();
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withCountyCourtJudgmentRequestedAt(now())
+                .build();
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+        });
     }
 
     @Test
@@ -173,19 +184,21 @@ public class CountyCourtJudgmentRuleTest {
         ).doesNotThrowAnyException();
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldReturnTureWhenCountyCourtJudgmentCannotBeRequested() {
-        BreathingSpace breathingSpace = BreathingSpace.builder()
-            .bsEnteredDate(LocalDate.now())
-            .bsLiftedDate(null)
-            .build();
-        Claim claim = SampleClaim.builder()
-            .withClaimId(12345678L)
-            .withClaimData(ClaimData.builder()
-                .breathingSpace(breathingSpace)
-                .build())
-            .build();
-        countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim);
+        assertThrows(ForbiddenActionException.class, () -> {
+            BreathingSpace breathingSpace = BreathingSpace.builder()
+                .bsEnteredDate(LocalDate.now())
+                .bsLiftedDate(null)
+                .build();
+            Claim claim = SampleClaim.builder()
+                .withClaimId(12345678L)
+                .withClaimData(ClaimData.builder()
+                    .breathingSpace(breathingSpace)
+                    .build())
+                .build();
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim);
+        });
     }
 
     @Test

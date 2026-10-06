@@ -5,11 +5,11 @@ import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.controllers.CourtFinderController;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CourtFinderServiceTest {
 
     private static final String SEARCH_BY_SLUG_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json";
@@ -67,7 +67,7 @@ public class CourtFinderServiceTest {
         return FeignException.errorStatus("method", response);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         courtFinderController = new CourtFinderController(courtFinderService);
     }

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LegalOrderGenerationDeadlinesCalculatorTest {
     private static final int DAYS_FOR_RESPONSE = 33;
     private static final LocalDate TODAY = LocalDate.of(2019, 1, 2);
@@ -27,7 +27,7 @@ public class LegalOrderGenerationDeadlinesCalculatorTest {
     @Mock
     private Clock clock;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         calculator = new LegalOrderGenerationDeadlinesCalculator(
             clock,

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
@@ -19,7 +19,7 @@ import java.time.ZonedDateTime;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JobSchedulerServiceTest {
     private static final int FIRST_REMINDER_DAY = 5;
     private static final int LAST_REMINDER_DAY = 3;

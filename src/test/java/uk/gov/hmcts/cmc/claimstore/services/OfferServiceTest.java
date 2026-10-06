@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_CLAIMANT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OfferServiceTest {
 
     private static final String AUTHORISATION = "Bearer aaa";
@@ -58,7 +59,7 @@ public class OfferServiceTest {
     @Mock
     private AppInsights appInsights;
 
-    @Before
+    @BeforeEach
     public void setup() {
         offersService = new OffersService(claimService, caseRepository, eventProducer, appInsights);
     }
@@ -78,9 +79,11 @@ public class OfferServiceTest {
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void makeAnOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.makeOffer(settledClaim, offer, madeBy, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            offersService.makeOffer(settledClaim, offer, madeBy, AUTHORISATION);
+        });
     }
 
     @Test
@@ -102,9 +105,11 @@ public class OfferServiceTest {
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void acceptOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.accept(settledClaim, decidedBy, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            offersService.accept(settledClaim, decidedBy, AUTHORISATION);
+        });
     }
 
     @Test
@@ -123,9 +128,11 @@ public class OfferServiceTest {
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void rejectOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.reject(settledClaim, decidedBy, AUTHORISATION);
+        assertThrows(ConflictException.class, () -> {
+            offersService.reject(settledClaim, decidedBy, AUTHORISATION);
+        });
     }
 
     @Test

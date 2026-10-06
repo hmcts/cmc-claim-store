@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -35,7 +36,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DirectionsQuestionnaireServiceTest {
 
     private static final String NON_PILOT_COURT_NAME = "Non pilot court name";
@@ -119,7 +120,7 @@ public class DirectionsQuestionnaireServiceTest {
 
     private DirectionsQuestionnaireService directionsQuestionnaireService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         directionsQuestionnaireService = new DirectionsQuestionnaireService();
     }
@@ -313,108 +314,120 @@ public class DirectionsQuestionnaireServiceTest {
         assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseDoesNotExist() {
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withClaimantResponse(null)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(CompanyDetails.builder().build())
-                .build())
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withClaimantResponse(null)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(CompanyDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsBusinessAndClaimantRejectionResponseHasNoDQObject() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withClaimantResponse(responseRejection)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(CompanyDetails.builder().build())
-                .build())
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            ResponseRejection responseRejection = ResponseRejection.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(null)
+                .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withClaimantResponse(responseRejection)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(CompanyDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseIsNotRejection() {
-        ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
-            .build();
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withClaimantResponse(responseAcceptation)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(CompanyDetails.builder().build())
-                .build())
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
+                .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withClaimantResponse(responseAcceptation)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(CompanyDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsIndividualAndFullDefenceDefendantResponseHasNoDQObject() {
-        FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(null)
+                .build();
 
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withResponse(defenceResponse)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(IndividualDetails.builder().build())
-                .build())
-            .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withResponse(defenceResponse)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(IndividualDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsIndividualAndPartAdmitDefendantResponseHasNoDQObject() {
-        PartAdmissionResponse defenceResponse = PartAdmissionResponse.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            PartAdmissionResponse defenceResponse = PartAdmissionResponse.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(null)
+                .build();
 
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withResponse(defenceResponse)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(IndividualDetails.builder().build())
-                .build())
-            .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withResponse(defenceResponse)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(IndividualDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfDefendantIsIndividualAndDefendantResponseIsFullAdmission() {
-        FullAdmissionResponse defenceResponse = FullAdmissionResponse.builder()
-            .freeMediation(NO)
-            .build();
+        assertThrows(IllegalStateException.class, () -> {
+            FullAdmissionResponse defenceResponse = FullAdmissionResponse.builder()
+                .freeMediation(NO)
+                .build();
 
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-            .withResponse(defenceResponse)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(IndividualDetails.builder().build())
-                .build())
-            .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+                .withResponse(defenceResponse)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(IndividualDetails.builder().build())
+                    .build())
+                .build();
 
-        directionsQuestionnaireService.getPreferredCourt(claim);
+            directionsQuestionnaireService.getPreferredCourt(claim);
+        });
     }
 
     @Test
@@ -520,22 +533,24 @@ public class DirectionsQuestionnaireServiceTest {
         assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(PILOT_COURT_NAME);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldReturnNullIfDQNotPresent() {
-        FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
+        assertThrows(NullPointerException.class, () -> {
+            FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(null)
+                .build();
 
-        Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(null))
-            .withResponse(defenceResponse)
-            .withClaimData(SampleClaimData
-                .builder()
-                .withDefendant(IndividualDetails.builder().build())
-                .build())
-            .build();
+            Claim claim = SampleClaim.builder()
+                .withFeatures(ImmutableList.of(null))
+                .withResponse(defenceResponse)
+                .withClaimData(SampleClaimData
+                    .builder()
+                    .withDefendant(IndividualDetails.builder().build())
+                    .build())
+                .build();
 
-        assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(null);
+            assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(null);
+        });
     }
 }
