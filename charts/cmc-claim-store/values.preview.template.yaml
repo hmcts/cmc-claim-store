@@ -95,7 +95,7 @@ java:
     enabled: true
     releaseNameOverride: ${SERVICE_NAME}-postgresql
     image:
-      tag: '11.6.0'
+      tag: '16.5.0'
       registry: hmctsprod.azurecr.io
       repository: imported/bitnami/postgresql
     primary:
@@ -152,6 +152,8 @@ ccd:
       keyVaults: []
       environment:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
+        NODE_CONFIG: >-
+          {"secrets":{"ccd":{"session-keys":["preview-only-signing-key-1","preview-only-signing-key-2"]}}}
     idam-pr:
       enabled: false
       debug: true
