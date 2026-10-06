@@ -7,8 +7,8 @@ import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
 import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
-import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
-import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
+import au.com.dius.pact.provider.spring.spring7.PactVerificationSpring7Provider;
+import au.com.dius.pact.provider.spring.spring7.Spring7MockMvcTestTarget;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -63,7 +63,7 @@ public class CmcClaimantApiProviderTest {
     }
 
     @TestTemplate
-    @ExtendWith(PactVerificationSpringProvider.class)
+    @ExtendWith(PactVerificationSpring7Provider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
         if (context != null) {
             context.verifyInteraction();
@@ -87,7 +87,7 @@ public class CmcClaimantApiProviderTest {
             .setMessageConverters(converter)
             .build();
 
-        MockMvcTestTarget testTarget = new MockMvcTestTarget();
+        Spring7MockMvcTestTarget testTarget = new Spring7MockMvcTestTarget();
         testTarget.setMockMvc(mockMvc);
         if (context != null) {
             context.setTarget(testTarget);
