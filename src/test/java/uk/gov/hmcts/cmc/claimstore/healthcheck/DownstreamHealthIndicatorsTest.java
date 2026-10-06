@@ -42,6 +42,7 @@ class DownstreamHealthIndicatorsTest {
         DownstreamHealth health = new JacksonConfiguration().objectMapper()
             .readValue("{\"status\":\"UP\",\"components\":{\"db\":{\"status\":\"UP\"}}}", DownstreamHealth.class);
 
+        assertThat(health.getStatus()).isEqualTo("UP");
         assertThat(health.toHealth().getStatus()).isEqualTo(Status.UP);
     }
 
