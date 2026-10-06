@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
@@ -45,10 +45,10 @@ public class DefendantResponseTest extends BaseMockSpringTest {
         .response(SampleResponse.validDefaults())
         .build();
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected ClaimService claimService;
 
     @BeforeEach

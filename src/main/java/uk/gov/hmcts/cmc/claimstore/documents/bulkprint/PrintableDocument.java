@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.bulkprint;
 
 import lombok.EqualsAndHashCode;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 @EqualsAndHashCode

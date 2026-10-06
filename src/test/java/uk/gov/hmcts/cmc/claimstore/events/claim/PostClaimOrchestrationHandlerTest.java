@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;

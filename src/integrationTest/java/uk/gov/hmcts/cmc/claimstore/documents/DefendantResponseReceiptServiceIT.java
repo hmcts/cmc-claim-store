@@ -3,8 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.claimstore.helper.HTMLTemplateProcessor;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
     @Autowired
     protected HTMLTemplateProcessor htmlTemplateProcessor;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Test

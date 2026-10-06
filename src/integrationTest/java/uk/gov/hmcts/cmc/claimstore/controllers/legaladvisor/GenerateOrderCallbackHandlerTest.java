@@ -6,9 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -59,7 +59,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         .build();
     private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     private static final String DOCUMENT_URL = "http://bla.test";
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

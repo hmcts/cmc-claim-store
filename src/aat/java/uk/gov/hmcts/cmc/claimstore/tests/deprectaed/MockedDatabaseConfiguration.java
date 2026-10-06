@@ -3,13 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.tests.deprectaed;
 import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -42,31 +41,31 @@ class MockedDatabaseConfiguration {
         }
     };
 
-    @MockBean
+    @MockitoBean
     private Flyway flyway;
 
-    @MockBean
+    @MockitoBean
     private ClaimRepository claimRepository;
 
-    @MockBean
+    @MockitoBean
     private TestingSupportRepository testingSupportRepository;
 
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockitoBean(name = "dataSource", answers = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
 
-    @MockBean
+    @MockitoBean
     private SpringBeanJobFactory springBeanJobFactory;
 
-    @MockBean
-    private SchedulerFactoryBean schedulerFactoryBean;
+    @MockitoBean(name = "schedulerFactoryBean")
+    private Scheduler schedulerFactoryBeanScheduler;
 
-    @MockBean
+    @MockitoBean
     private Scheduler scheduler;
 
-    @MockBean(name = "transactionAwareDataSourceProxy")
+    @MockitoBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
 
-    @MockBean(name = "transactionManager")
+    @MockitoBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
     @Bean

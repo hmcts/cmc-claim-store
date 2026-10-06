@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -39,10 +39,10 @@ public class SettlementAgreementTest extends BaseMockSpringTest {
     private static final String REJECT_SETTLEMENT_URL = BASE_SETTLEMENT_URL + "/reject";
     private static final String COUNTERSIGN_SETTLEMENT_URL = BASE_SETTLEMENT_URL + "/countersign";
 
-    @MockBean
+    @MockitoBean
     protected ClaimService claimService;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

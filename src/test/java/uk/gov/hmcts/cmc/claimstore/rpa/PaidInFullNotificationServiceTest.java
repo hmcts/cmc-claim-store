@@ -25,7 +25,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 public class PaidInFullNotificationServiceTest {
     private static final String PAID_IN_FULL_EMAIL_ADDRESS = "test@example.com";
     private static final String SENDER_EMAIL = "sender@example.com";

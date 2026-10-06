@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -37,7 +37,7 @@ public class CreateClaimCallbackHandlerTest extends BaseMockSpringTest {
     private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     public static final String REFERENCE_NO = "000LR001";
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

@@ -27,7 +27,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 public class ResponseNeededNotificationServiceTest extends BaseNotificationServiceTest {
     public static final String EMAIL_TEMPLATE_ID = "email_template_id";
     private ResponseNeededNotificationService responseNeededNotificationService;

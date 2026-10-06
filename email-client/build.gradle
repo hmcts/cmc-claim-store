@@ -16,6 +16,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
+  implementation group: 'org.springframework', name: 'spring-web'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.48'

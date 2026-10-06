@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableList;
 import com.launchdarkly.sdk.LDUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;

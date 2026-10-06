@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.PDFServiceProperties;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 
 @Configuration
 public class PDFServiceConfiguration {
@@ -16,10 +16,7 @@ public class PDFServiceConfiguration {
         ObjectMapper objectMapper,
         PDFServiceProperties properties
     ) {
-        return PDFServiceClient.builder()
-            .restOperations(restTemplate)
-            .objectMapper(objectMapper)
-            .build(properties.getUrl());
+        return new PDFServiceClient(restTemplate, objectMapper, properties.getUrl());
     }
 
 }

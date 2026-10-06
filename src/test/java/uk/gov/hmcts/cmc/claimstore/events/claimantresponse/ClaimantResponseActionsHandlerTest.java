@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantRejectionDefendantDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimantRejectionDefendantNotificationService;

@@ -3,10 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -48,7 +48,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 public class CreateClaimCitizenTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach
