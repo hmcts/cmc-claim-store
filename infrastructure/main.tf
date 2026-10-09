@@ -4,7 +4,6 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
   alias                      = "cft_vnet"
   subscription_id            = var.aks_subscription_id
 }
@@ -200,5 +199,32 @@ resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
 resource "azurerm_key_vault_secret" "cmc-db-host-v15" {
   name         = "cmc-db-host-v15"
   value        = module.db-v15.fqdn
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_key_vault" "central-app-reg-kv_vault" {
+  name                = "central-app-reg-kv"
+  resource_group_name = "central-app-registration-rg"
+}
+
+data "azurerm_key_vault_secret" "claim-store-non-prod-secret_key_from_vault" {
+  name         = "claim-store-non-prod-secret"
+  key_vault_id = data.azurerm_key_vault.central-app-reg-kv_vault.id
+}
+
+resource "azurerm_key_vault_secret" "pt-api-s2s-secret" {
+  name         = "claim-store-non-prod-secret"
+  value        = data.azurerm_key_vault_secret.claim-store-non-prod-secret_key_from_vault.value
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "claim-store-non-prod-app-id_from_vault" {
+  name         = "claim-store-non-prod-app-id"
+  key_vault_id = data.azurerm_key_vault.central-app-reg-kv_vault.id
+}
+
+resource "azurerm_key_vault_secret" "claim-store-non-prod-app-id" {
+  name         = "claim-store-non-prod-app-id"
+  value        = data.azurerm_key_vault_secret.claim-store-non-prod-app-id_from_vault.value
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
