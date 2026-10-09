@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support.orders;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
@@ -24,12 +24,13 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.net.URI;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LEGAL_ADVISOR_ORDER_PDF;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BulkPrintSupportControllerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_REFERENCE = "000MC001";
@@ -49,7 +50,7 @@ public class BulkPrintSupportControllerTest {
 
     private BulkPrintSupportController bulkPrintSupportController;
 
-    @Before
+    @BeforeEach
     public void before() {
         bulkPrintSupportController
             = new BulkPrintSupportController(legalOrderService, claimService, userService, caseMapper);
@@ -82,11 +83,13 @@ public class BulkPrintSupportControllerTest {
         verify(legalOrderService).print(eq(AUTHORISATION), eq(sampleClaim), eq(document));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowWhenDocumentIsNotPresentInCase() {
-        CCDCase ccdCase = CCDCase.builder().build();
-        when(caseMapper.to(eq(sampleClaim))).thenReturn(ccdCase);
+        assertThrows(RuntimeException.class, () -> {
+            CCDCase ccdCase = CCDCase.builder().build();
+            when(caseMapper.to(eq(sampleClaim))).thenReturn(ccdCase);
 
-        bulkPrintSupportController.resendLegalAdvisorOrderToPrint(CLAIM_REFERENCE);
+            bulkPrintSupportController.resendLegalAdvisorOrderToPrint(CLAIM_REFERENCE);
+        });
     }
 }

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -12,6 +12,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationToDefendantServiceTest extends BaseNotificationServiceTest {
 
     private static final String REFERENCE = "to-defendant-claimant’s-response-submitted-notification-000MC001";
@@ -34,7 +35,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private NotificationToDefendantService service;
     private Claim claim;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         service = new NotificationToDefendantService(
             new NotificationService(notificationClient, appInsights),
@@ -49,13 +50,15 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void shouldThrowNotificationExceptionWhenClientThrowsNotificationClientException() throws Exception {
-        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
-        when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
-            .thenThrow(mock(NotificationClientException.class));
+        assertThrows(NotificationException.class, () -> {
+            when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+            when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+                .thenThrow(mock(NotificationClientException.class));
 
-        service.notifyDefendant(claim);
+            service.notifyDefendant(claim);
+        });
     }
 
     @Test
@@ -71,19 +74,21 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         );
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void shouldThrowNotificationExceptionWhenRejectionThrowsNotificationClientException() throws Exception {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
-            .build();
+        assertThrows(NotificationException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withDefendantEmail(DEFENDANT_EMAIL)
+                .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+                .build();
 
-        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
-            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
-        when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
-            .thenThrow(mock(NotificationClientException.class));
+            when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+                .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+            when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+                .thenThrow(mock(NotificationClientException.class));
 
-        service.notifyDefendantOfClaimantResponse(claim);
+            service.notifyDefendantOfClaimantResponse(claim);
+        });
     }
 
     @Test

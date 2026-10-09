@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.AddressMapper;
@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CitizenServiceDocumentsServiceTest {
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
@@ -68,7 +68,7 @@ public class CitizenServiceDocumentsServiceTest {
     @Mock
     private AddressMapper addressMapper;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         defendantPinLetterTemplateID = "XYZ";
         citizenServiceDocumentsService

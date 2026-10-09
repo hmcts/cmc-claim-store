@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -66,10 +66,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     }
 )
 public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest {
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     private CCDCaseApi ccdCaseApi;
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
@@ -105,7 +105,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @Mock
     private SendLetterResponse sendLetterResponse;
 
-    @MockBean
+    @MockitoBean
     private ChangeContactLetterService changeContactLetterService;
 
     @BeforeEach

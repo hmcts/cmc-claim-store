@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
@@ -34,8 +34,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.OCON9X;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -91,7 +91,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private UserService userService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         documentManagementBackendDocumentsService = new DocumentManagementBackedDocumentsService(
             claimService,
@@ -131,16 +131,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         assertArrayEquals(PDF_BYTES, pdf);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionIfErrorGettingOCON9xForm() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
+            Claim claimWithoutOCON9xForm = SampleClaim.getDefault();
+            when(claimService.getClaimByExternalId(claimWithoutOCON9xForm.getExternalId(), DEFENDANT))
+                .thenReturn(claimWithoutOCON9xForm);
 
-        when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
-        Claim claimWithoutOCON9xForm = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(claimWithoutOCON9xForm.getExternalId(), DEFENDANT))
-            .thenReturn(claimWithoutOCON9xForm);
-
-        documentManagementBackendDocumentsService.generateScannedDocument(claimWithoutOCON9xForm.getExternalId(),
-            FORM, OCON9X, AUTHORISATION);
+            documentManagementBackendDocumentsService.generateScannedDocument(claimWithoutOCON9xForm.getExternalId(),
+                FORM, OCON9X, AUTHORISATION);
+        });
     }
 
     @Test
@@ -179,15 +180,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         assertArrayEquals(PDF_BYTES, pdf);
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void throwForbiddenWhenClaimantDownloadSealedClaim() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
-            .thenReturn(claim);
-        documentManagementBackendDocumentsService.generateDocument(
-            claim.getExternalId(),
-            SEALED_CLAIM,
-            AUTHORISATION);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.getDefault();
+            when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
+                .thenReturn(claim);
+            documentManagementBackendDocumentsService.generateDocument(
+                claim.getExternalId(),
+                SEALED_CLAIM,
+                AUTHORISATION);
+        });
     }
 
     @Test
@@ -394,24 +397,26 @@ public class DocumentManagementBackedDocumentsServiceTest {
         verify(securedDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
-    @Test(expected = DocumentDownloadForbiddenException.class)
+    @Test
     public void generateDocumentShouldThrowExceptionWhenExceptionIsThrown() {
-        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
-        Claim claim = Claim.builder()
-            .externalId("externalID")
-            .submitterId(CLAIMANT.getUserDetails().getId())
-            .claimDocumentCollection(claimDocumentCollection)
-            .build();
+        assertThrows(DocumentDownloadForbiddenException.class, () -> {
+            final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+            Claim claim = Claim.builder()
+                .externalId("externalID")
+                .submitterId(CLAIMANT.getUserDetails().getId())
+                .claimDocumentCollection(claimDocumentCollection)
+                .build();
 
-        when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
-            .thenThrow(DocumentManagementException.class);
+            when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
+                .thenThrow(DocumentManagementException.class);
 
-        assertThrows(DocumentManagementException.class, () -> {
-            documentManagementBackendDocumentsService.generateDocument(
-                claim.getExternalId(),
-                ORDER_DIRECTIONS,
-                AUTHORISATION
-            );
+            assertThrows(DocumentManagementException.class, () -> {
+                documentManagementBackendDocumentsService.generateDocument(
+                    claim.getExternalId(),
+                    ORDER_DIRECTIONS,
+                    AUTHORISATION
+                );
+            });
         });
     }
 

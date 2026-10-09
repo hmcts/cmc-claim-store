@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentUploadHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_MUST_NOT_BE_NULL = "Claim must not be null";
@@ -108,7 +108,7 @@ public class DocumentUploadHandlerTest {
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     private DocumentUploadHandler documentUploadHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         documentUploadHandler = new DocumentUploadHandler(
             defendantResponseReceiptService,
@@ -154,7 +154,7 @@ public class DocumentUploadHandlerTest {
         DocumentGeneratedEvent documentGeneratedEvent = new DocumentGeneratedEvent(null, AUTHORISATION);
         try {
             documentUploadHandler.uploadCitizenClaimDocument(documentGeneratedEvent);
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -180,7 +180,7 @@ public class DocumentUploadHandlerTest {
             sealedClaim);
         try {
             documentUploadHandler.uploadCitizenClaimDocument(event);
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -202,7 +202,7 @@ public class DocumentUploadHandlerTest {
     public void defendantResponseEventForDocumentUploadThrowsExceptionWhenResponseNotPresent() {
         try {
             documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEventWithoutResponse);
-            Assert.fail("Expected a NotFoundException to be thrown");
+            Assertions.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Defendant response does not exist for this claim");
         }
@@ -213,7 +213,7 @@ public class DocumentUploadHandlerTest {
         DefendantResponseEvent defendantResponseEvent = new DefendantResponseEvent(null, AUTHORISATION);
         try {
             documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEvent);
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -236,7 +236,7 @@ public class DocumentUploadHandlerTest {
         AgreementCountersignedEvent event = new AgreementCountersignedEvent(null, null, AUTHORISATION);
         try {
             documentUploadHandler.uploadSettlementAgreementDocument(event);
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -248,7 +248,7 @@ public class DocumentUploadHandlerTest {
             null, AUTHORISATION);
         try {
             documentUploadHandler.uploadSettlementAgreementDocument(event);
-            Assert.fail("Expected a NotFoundException to be thrown");
+            Assertions.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Settlement Agreement does not exist for this claim");
         }
@@ -272,7 +272,7 @@ public class DocumentUploadHandlerTest {
         try {
             documentUploadHandler.uploadSettlementAgreementDocument(event
             );
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -338,7 +338,7 @@ public class DocumentUploadHandlerTest {
         ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, null);
         try {
             documentUploadHandler.uploadReviewOrderRequestDocument(event);
-            Assert.fail("Expected a NullPointerException to be thrown");
+            Assertions.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
         }
@@ -349,7 +349,7 @@ public class DocumentUploadHandlerTest {
         ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, SampleClaim.getDefault());
         try {
             documentUploadHandler.uploadReviewOrderRequestDocument(event);
-            Assert.fail("Expected a NotFoundException to be thrown");
+            Assertions.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Review Order does not exist for this claim");
         }

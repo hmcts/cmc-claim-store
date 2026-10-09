@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReferenceNumberServiceTest {
 
     private ReferenceNumberService referenceNumberService;
@@ -18,7 +18,7 @@ public class ReferenceNumberServiceTest {
     @Mock
     private ReferenceNumberRepository referenceNumberRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         referenceNumberService = new ReferenceNumberService(referenceNumberRepository);
     }

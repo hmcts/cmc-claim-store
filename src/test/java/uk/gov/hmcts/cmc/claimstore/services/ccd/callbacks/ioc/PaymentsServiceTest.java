@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -27,13 +27,15 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String RETURN_URL = "http://returnUrl.test";
@@ -65,7 +67,7 @@ public class PaymentsServiceTest {
         .feeAmount(BigDecimal.TEN)
         .build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         paymentsService = new PaymentsService(
             paymentsClient,
@@ -74,7 +76,7 @@ public class PaymentsServiceTest {
             DESCRIPTION
         );
         claim = SampleClaim.getDefault();
-        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
+        lenient().when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
             .thenReturn(feeOutcome);
     }
 
@@ -266,42 +268,48 @@ public class PaymentsServiceTest {
         assertThat(payment).contains(expectedPayment);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldBubbleUpExceptionIfFeeLookupFailsWithNewClaimFees() {
-        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
-            .thenThrow(IllegalStateException.class);
+        assertThrows(IllegalStateException.class, () -> {
+            when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
+                .thenThrow(IllegalStateException.class);
 
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
+            paymentsService.createPayment(
+                BEARER_TOKEN,
+                claim
+            );
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        when(paymentsClient.createCardPayment(
-            eq(BEARER_TOKEN),
-            any(),
-            any(),
-            any()))
-            .thenThrow(IllegalStateException.class);
+        assertThrows(IllegalStateException.class, () -> {
+            when(paymentsClient.createCardPayment(
+                eq(BEARER_TOKEN),
+                any(),
+                any(),
+                any()))
+                .thenThrow(IllegalStateException.class);
 
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
+            paymentsService.createPayment(
+                BEARER_TOKEN,
+                claim
+            );
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIfAmountIsNotCalculated() {
-        Claim sampleClaim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withAmount(null)
-                .build())
-            .build();
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            sampleClaim
-        );
+        assertThrows(IllegalStateException.class, () -> {
+            Claim sampleClaim = SampleClaim.builder()
+                .withClaimData(SampleClaimData.builder()
+                    .withAmount(null)
+                    .build())
+                .build();
+            paymentsService.createPayment(
+                BEARER_TOKEN,
+                sampleClaim
+            );
+        });
     }
 }

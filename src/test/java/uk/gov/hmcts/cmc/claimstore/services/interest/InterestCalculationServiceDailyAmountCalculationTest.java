@@ -1,28 +1,33 @@
 package uk.gov.hmcts.cmc.claimstore.services.interest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InterestCalculationServiceDailyAmountCalculationTest {
 
     private static final BigDecimal HUNDRED_PERCENT_INTEREST = valueOf(100);
     private static final BigDecimal EIGHT_PERCENT_INTEREST = valueOf(8);
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullAmount() {
-        InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
-        service.calculateDailyAmountFor(null, HUNDRED_PERCENT_INTEREST);
+        assertThrows(NullPointerException.class, () -> {
+            InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
+            service.calculateDailyAmountFor(null, HUNDRED_PERCENT_INTEREST);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullInterest() {
-        InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
-        service.calculateDailyAmountFor(BigDecimal.TEN, null);
+        assertThrows(NullPointerException.class, () -> {
+            InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
+            service.calculateDailyAmountFor(BigDecimal.TEN, null);
+        });
     }
 
     @Test

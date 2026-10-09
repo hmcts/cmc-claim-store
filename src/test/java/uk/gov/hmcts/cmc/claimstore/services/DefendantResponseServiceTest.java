@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -46,7 +47,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefendantResponseServiceTest {
 
     private static final Response VALID_APP = SampleResponse.FullDefence.builder().withMediation(NO).build();
@@ -68,7 +69,7 @@ public class DefendantResponseServiceTest {
     @Mock
     private AppInsights appInsights;
 
-    @Before
+    @BeforeEach
     public void setup() {
         responseService = new DefendantResponseService(
             eventProducer,
@@ -132,49 +133,54 @@ public class DefendantResponseServiceTest {
 
     }
 
-    @Test(expected = DefendantLinkingException.class)
+    @Test
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsLinkedToOtherDefendant() {
+        assertThrows(DefendantLinkingException.class, () -> {
+            when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+                .thenReturn(SampleClaim.builder().withDefendantId("not-mine-claim").build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.builder().withDefendantId("not-mine-claim").build());
-
-        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+            responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+        });
     }
 
-    @Test(expected = DefendantLinkingException.class)
+    @Test
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsNotLinkedToAnyUser() {
+        assertThrows(DefendantLinkingException.class, () -> {
+            when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+                .thenReturn(SampleClaim.builder().withDefendantId(null).build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.builder().withDefendantId(null).build());
-
-        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+            responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+        });
     }
 
-    @Test(expected = DefendantLinkingException.class)
+    @Test
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimDefendantIdIsNullAndGivenDefendantIdIsNull() {
+        assertThrows(DefendantLinkingException.class, () -> {
+            when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+                .thenReturn(SampleClaim.builder().withDefendantId(null).build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.builder().withDefendantId(null).build());
-
-        responseService.save(EXTERNAL_ID, null, VALID_APP, AUTHORISATION);
+            responseService.save(EXTERNAL_ID, null, VALID_APP, AUTHORISATION);
+        });
     }
 
-    @Test(expected = ResponseAlreadySubmittedException.class)
+    @Test
     public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {
+        assertThrows(ResponseAlreadySubmittedException.class, () -> {
+            when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+                .thenReturn(SampleClaim.builder().withRespondedAt(LocalDateTime.now()).build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.builder().withRespondedAt(LocalDateTime.now()).build());
-
-        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+            responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+        });
     }
 
-    @Test(expected = CountyCourtJudgmentAlreadyRequestedException.class)
+    @Test
     public void saveShouldThrowCountyCourtJudgmentAlreadyRequestedExceptionWhenCCJRequested() {
+        assertThrows(CountyCourtJudgmentAlreadyRequestedException.class, () -> {
+            when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+                .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
-
-        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+            responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+        });
     }
 
     @Test
@@ -247,8 +253,10 @@ public class DefendantResponseServiceTest {
             .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getAppInsightsEventNameShouldThrowNullPointerExceptionForNullInput() {
-        responseService.getAppInsightsEventName(null);
+        assertThrows(NullPointerException.class, () -> {
+            responseService.getAppInsightsEventName(null);
+        });
     }
 }

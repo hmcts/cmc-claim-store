@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
@@ -15,6 +15,7 @@ import java.time.Clock;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SealedClaimDataContentProviderTest {
 
@@ -32,9 +33,11 @@ public class SealedClaimDataContentProviderTest {
         )
     );
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullClaim() {
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null);
+        });
     }
 
     @Test
@@ -51,7 +54,7 @@ public class SealedClaimDataContentProviderTest {
         PersonContent defendantContent = (PersonContent)content.get("defendant");
 
         assertThat(content).containsKey("defendant");
-        Assert.assertEquals("0776655443322", defendantContent.getPhoneNumber());
+        Assertions.assertEquals("0776655443322", defendantContent.getPhoneNumber());
     }
 
     @Test

@@ -34,6 +34,11 @@
     <module name="SuppressWarningsFilter" />
     <module name="TreeWalker">
         <module name="UnusedImports"/>
+        <!-- JUnit 4 tests would compile but never run: only the JUnit 5 (Jupiter) engine is on the test classpath -->
+        <module name="IllegalImport">
+            <property name="regexp" value="true"/>
+            <property name="illegalClasses" value="^org\.junit\.(?!jupiter\.|platform\.).+"/>
+        </module>
         <module name="SuppressWarningsHolder" />
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
@@ -217,12 +222,6 @@
         <module name="AtclauseOrder">
             <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
             <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
-        </module>
-        <module name="JavadocMethod">
-            <property name="scope" value="nothing"/>
-            <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingReturnTag" value="true"/>
-            <property name="allowedAnnotations" value="Override, Test"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>

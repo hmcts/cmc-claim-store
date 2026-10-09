@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.jobs.cron;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
@@ -14,13 +14,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StayClaimJobTest {
 
     @Mock
@@ -34,7 +35,7 @@ public class StayClaimJobTest {
 
     private static final LocalDate TODAY = LocalDate.of(2020, 3, 3);
 
-    @Before
+    @BeforeEach
     public void setup() {
         fixedClock = Clock.fixed(TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -52,10 +53,12 @@ public class StayClaimJobTest {
             eq(LocalDateTime.now(fixedClock)), eq(StateTransitions.STAY_CLAIM));
     }
 
-    @Test(expected = JobExecutionException.class)
+    @Test
     public void shouldThrowJobExecutionException() throws Exception {
-        doThrow(new RuntimeException()).when(scheduledStateTransitionService).stateChangeTriggered(any(), any());
+        assertThrows(JobExecutionException.class, () -> {
+            doThrow(new RuntimeException()).when(scheduledStateTransitionService).stateChangeTriggered(any(), any());
 
-        stayClaimJob.execute(null);
+            stayClaimJob.execute(null);
+        });
     }
 }

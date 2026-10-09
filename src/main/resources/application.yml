@@ -37,6 +37,10 @@ spring:
       max-request-size: 4000000KB
   jackson:
     default-property-inclusion: non_empty
+  http:
+    converters:
+      # Boot 4 defaults to Jackson 3; keep HTTP (MVC and Feign) on the app's Jackson 2 ObjectMapper
+      preferred-json-mapper: jackson2
   datasource:
     driverClassName: org.postgresql.Driver
     username: ${CMC_DB_USERNAME:-}

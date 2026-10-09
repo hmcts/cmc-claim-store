@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
@@ -36,11 +36,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MediationReportServiceTest {
     private static final String FROM_ADDRESS = "sender@mail.com";
     private static final String TO_ADDRESS = "recipient@mail.com";
@@ -67,7 +68,7 @@ public class MediationReportServiceTest {
     @Mock
     private Clock clock;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.service = new MediationReportService(
             emailService,
@@ -78,11 +79,11 @@ public class MediationReportServiceTest {
             TO_ADDRESS,
             FROM_ADDRESS
         );
-        when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
+        lenient().when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
 
-        when(clock.instant()).thenReturn(TODAY.atStartOfDay(ZoneOffset.UTC).toInstant());
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        lenient().when(clock.instant()).thenReturn(TODAY.atStartOfDay(ZoneOffset.UTC).toInstant());
+        lenient().when(clock.getZone()).thenReturn(ZoneOffset.UTC);
     }
 
     @Test

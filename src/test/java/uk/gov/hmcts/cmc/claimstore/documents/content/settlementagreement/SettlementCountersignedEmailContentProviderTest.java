@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
@@ -34,7 +34,7 @@ public class SettlementCountersignedEmailContentProviderTest {
     private final SettlementCountersignedEmailContentProvider classToTest =
         new SettlementCountersignedEmailContentProvider(templateService, templates);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);

@@ -1,25 +1,26 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.ReviewOrderContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReviewOrderServiceTest {
 
     @Mock
@@ -33,7 +34,7 @@ public class ReviewOrderServiceTest {
 
     private ReviewOrderService reviewOrderService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         reviewOrderService = new ReviewOrderService(
             documentTemplates,
@@ -59,9 +60,11 @@ public class ReviewOrderServiceTest {
         Assertions.assertThat(pdf.getFilename()).isEqualTo(claim.getReferenceNumber() + "-review-order.pdf");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfClaimIsNull() {
-        reviewOrderService.createPdf(null);
+        assertThrows(NullPointerException.class, () -> {
+            reviewOrderService.createPdf(null);
+        });
     }
 
 }

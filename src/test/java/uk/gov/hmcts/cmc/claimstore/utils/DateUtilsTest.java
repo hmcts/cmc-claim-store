@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DateUtilsTest {
 
@@ -12,29 +14,33 @@ public class DateUtilsTest {
     public void startOfDay() {
         LocalDate localDate = LocalDate.of(2019, 7, 8);
         LocalDateTime dateTime = DateUtils.startOfDay(localDate);
-        Assert.assertEquals(localDate, dateTime.toLocalDate());
-        Assert.assertEquals(0, dateTime.getHour());
-        Assert.assertEquals(0, dateTime.getMinute());
-        Assert.assertEquals(0, dateTime.getSecond());
+        Assertions.assertEquals(localDate, dateTime.toLocalDate());
+        Assertions.assertEquals(0, dateTime.getHour());
+        Assertions.assertEquals(0, dateTime.getMinute());
+        Assertions.assertEquals(0, dateTime.getSecond());
     }
 
     @Test
     public void endOfDay() {
         LocalDate localDate = LocalDate.of(2019, 7, 8);
         LocalDateTime dateTime = DateUtils.endOfDay(localDate);
-        Assert.assertEquals(localDate, dateTime.toLocalDate());
-        Assert.assertEquals(23, dateTime.getHour());
-        Assert.assertEquals(59, dateTime.getMinute());
-        Assert.assertEquals(59, dateTime.getSecond());
+        Assertions.assertEquals(localDate, dateTime.toLocalDate());
+        Assertions.assertEquals(23, dateTime.getHour());
+        Assertions.assertEquals(59, dateTime.getMinute());
+        Assertions.assertEquals(59, dateTime.getSecond());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void startOfDayShouldNotAcceptNull() {
-        DateUtils.startOfDay(null);
+        assertThrows(NullPointerException.class, () -> {
+            DateUtils.startOfDay(null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void endOfDayShouldNotAcceptNull() {
-        DateUtils.endOfDay(null);
+        assertThrows(NullPointerException.class, () -> {
+            DateUtils.endOfDay(null);
+        });
     }
 }

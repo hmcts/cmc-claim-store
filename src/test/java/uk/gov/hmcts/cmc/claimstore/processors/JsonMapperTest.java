@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableList;
 import org.json.JSONException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
@@ -39,6 +39,7 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONCompareMode.LENIENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -241,7 +242,7 @@ public class JsonMapperTest {
 
         //then
         Response expected = SampleResponse.validDefaults();
-        Assert.assertEquals(output, expected);
+        Assertions.assertEquals(output, expected);
     }
 
     @Test
@@ -257,14 +258,18 @@ public class JsonMapperTest {
         assertThat(output).isEqualTo(expected);
     }
 
-    @Test(expected = InvalidApplicationException.class)
+    @Test
     public void shouldThrowExceptionOnInvalidJson() {
-        processor.fromJson("{asads:", Response.class);
+        assertThrows(InvalidApplicationException.class, () -> {
+            processor.fromJson("{asads:", Response.class);
+        });
     }
 
-    @Test(expected = InvalidApplicationException.class)
+    @Test
     public void shouldThrowExceptionOnInvalidJsonWithTypeReference() {
-        processor.fromJson("{asads:", new TypeReference<List<Response>>() {
+        assertThrows(InvalidApplicationException.class, () -> {
+            processor.fromJson("{asads:", new TypeReference<List<Response>>() {
+            });
         });
     }
 

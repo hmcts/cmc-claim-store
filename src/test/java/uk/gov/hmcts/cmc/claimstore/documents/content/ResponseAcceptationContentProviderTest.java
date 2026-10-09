@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
@@ -32,7 +32,7 @@ public class ResponseAcceptationContentProviderTest {
     private final ResponseAcceptationContentProvider contentProvider =
         new ResponseAcceptationContentProvider(paymentIntentionContentProvider);
 
-    @Before
+    @BeforeEach
     public void setup() {
         paymentIntentionContentProvider.createContent(
             PaymentOption.IMMEDIATELY,

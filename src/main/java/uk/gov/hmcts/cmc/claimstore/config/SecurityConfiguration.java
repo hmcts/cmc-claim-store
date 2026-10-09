@@ -20,7 +20,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
@@ -104,7 +104,7 @@ public class SecurityConfiguration {
     @Bean
     public BearerTokenResolver callbackSkippingBearerTokenResolver() {
         DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
-        RequestMatcher callbackPaths = new AntPathRequestMatcher("/cases/callbacks/**");
+        RequestMatcher callbackPaths = PathPatternRequestMatcher.withDefaults().matcher("/cases/callbacks/**");
         return request -> callbackPaths.matches(request) ? null : delegate.resolve(request);
     }
 

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefendantResponseControllerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
 
@@ -26,7 +26,7 @@ public class DefendantResponseControllerTest {
     @Mock
     private DefendantResponseService responseService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         defendantResponseController = new DefendantResponseController(responseService);
     }

@@ -1,15 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -17,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentServi
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.Collections;
@@ -30,10 +30,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentOrchestrationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
@@ -77,7 +78,7 @@ public class DocumentOrchestrationServiceTest {
     @Mock
     private PrintableDocumentService printableDocumentService;
 
-    @Before
+    @BeforeEach
     public void before() {
         documentOrchestrationService = new DocumentOrchestrationService(
             citizenServiceDocumentsService,
@@ -89,26 +90,25 @@ public class DocumentOrchestrationServiceTest {
             printableDocumentService
         );
 
-        given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
-        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
+        lenient().when(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).thenReturn(sealedClaimLetterDocument);
+        lenient().when(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).thenReturn(defendantLetterDocument);
 
-        given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(new PDF(
+        lenient().when(sealedClaimPdfService.createPdf(eq(CLAIM))).thenReturn(new PDF(
             "sealedClaim",
             PDF_BYTES,
             ClaimDocumentType.SEALED_CLAIM
         ));
-        given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(new PDF(
+        lenient().when(claimIssueReceiptService.createPdf(eq(CLAIM))).thenReturn(new PDF(
             "claimIssueReceipt",
             PDF_BYTES,
             CLAIM_ISSUE_RECEIPT
         ));
-        given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
-        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
-            .willReturn(GeneratePinResponse.builder()
+        lenient().when(pdfServiceClient.generateFromHtml(any(), anyMap())).thenReturn(PDF_BYTES);
+        lenient().when(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
+            .thenReturn(GeneratePinResponse.builder()
                 .pin(PIN)
                 .userId(LETTER_HOLDER_ID)
-                .build()
-            );
+                .build());
     }
 
     @Test

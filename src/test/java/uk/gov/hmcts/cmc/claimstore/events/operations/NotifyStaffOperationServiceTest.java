@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events.operations;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotifyStaffOperationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
@@ -31,7 +31,7 @@ public class NotifyStaffOperationServiceTest {
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
 
-    @Before
+    @BeforeEach
     public void before() {
         notifyStaffOperationService = new NotifyStaffOperationService(claimIssuedStaffNotificationService,
             eventsStatusService);

@@ -1,20 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DirectionsQuestionnaireDeadlineCalculatorTest {
 
     private static final int SERVICE_DAYS = 5;
@@ -30,12 +31,12 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         calculator = new DirectionsQuestionnaireDeadlineCalculator(
             workingDayIndicator, SERVICE_DAYS, DAYS_FOR_RESPONSE, END_OF_BUSINESS_DAY
         );
-        when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(true);
+        lenient().when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(true);
     }
 
     @Test

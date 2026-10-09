@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CourtFinderControllerTest {
 
     private static final String SEARCH_BY_NAME_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/name/SEARCH_BY_NAME_NEWCASTLE.json";
@@ -26,7 +26,7 @@ public class CourtFinderControllerTest {
     @Mock
     private CourtFinderService courtFinderService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         courtFinderController = new CourtFinderController(courtFinderService);
     }

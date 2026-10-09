@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.apache.http.HttpException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -66,10 +66,12 @@ import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -95,7 +97,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimServiceTest {
     private static final String RETURN_URL = "http://returnUrl.test";
 
@@ -134,10 +136,10 @@ public class ClaimServiceTest {
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        lenient().when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
+        lenient().when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         claimService = new ClaimService(
             caseRepository,
@@ -168,26 +170,28 @@ public class ClaimServiceTest {
         assertThat(claimApplication).isEqualTo(claim);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getClaimByLetterHolderIdShouldThrowExceptionWhenClaimDoesNotExist() {
+        assertThrows(NotFoundException.class, () -> {
+            Optional<Claim> result = empty();
+            String letterHolderId = "0";
 
-        Optional<Claim> result = empty();
-        String letterHolderId = "0";
+            when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
 
-        when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
-
-        claimService.getClaimByLetterHolderId(letterHolderId, AUTHORISATION);
+            claimService.getClaimByLetterHolderId(letterHolderId, AUTHORISATION);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getClaimByExternalIdShouldThrowExceptionWhenClaimDoesNotExist() {
+        assertThrows(NotFoundException.class, () -> {
+            Optional<Claim> result = empty();
+            String externalId = "does not exist";
 
-        Optional<Claim> result = empty();
-        String externalId = "does not exist";
+            when(caseRepository.getClaimByExternalId(eq(externalId), eq(USER))).thenReturn(result);
 
-        when(caseRepository.getClaimByExternalId(eq(externalId), eq(USER))).thenReturn(result);
-
-        claimService.getClaimByExternalId(externalId, USER);
+            claimService.getClaimByExternalId(externalId, USER);
+        });
     }
 
     @Test
@@ -270,7 +274,7 @@ public class ClaimServiceTest {
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
-        Assert.assertThrows(ClaimCreationDisabledException.class, () -> claimService
+        Assertions.assertThrows(ClaimCreationDisabledException.class, () -> claimService
             .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue())));
 
     }
@@ -290,22 +294,25 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).requestMoreTimeForResponse(eq(AUTHORISATION), eq(claim), eq(newDeadline));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
+        assertThrows(NotFoundException.class, () -> {
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+            claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+        });
     }
 
-    @Test(expected = MoreTimeAlreadyRequestedException.class)
+    @Test
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
+        assertThrows(MoreTimeAlreadyRequestedException.class, () -> {
+            Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+                .thenReturn(Optional.of(claim));
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
-
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+            claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+        });
     }
 
     @Test
@@ -356,30 +363,35 @@ public class ClaimServiceTest {
             AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void paidInFullShouldThrowConflictExceptionIfAlreadyPaidInFull() {
+        assertThrows(ConflictException.class, () -> {
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+                .thenReturn(Optional.of(createPaidInFullClaim(now())));
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(createPaidInFullClaim(now())));
-
-        claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+            claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void paidInFullShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
+        assertThrows(NotFoundException.class, () -> {
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
-        claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+            claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void getBySubmitterIdShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
+            claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
+        });
     }
 
     @Test
@@ -402,70 +414,84 @@ public class ClaimServiceTest {
         assertThat(result).isNotNull();
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void getByLetterHolderIdShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository
-            .getByLetterHolderId(claim.getLetterHolderId(), AUTHORISATION))
-            .thenReturn(Optional.of(claim));
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(caseRepository
+                .getByLetterHolderId(claim.getLetterHolderId(), AUTHORISATION))
+                .thenReturn(Optional.of(claim));
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
+            claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void getByExternalIdShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER))
-            .thenReturn(Optional.of(claim));
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(caseRepository.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER))
+                .thenReturn(Optional.of(claim));
 
-        claimService.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER);
+            claimService.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void getByReferenceShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getByClaimReferenceNumber(claim.getReferenceNumber(), AUTHORISATION))
-            .thenReturn(Optional.of(claim));
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(caseRepository.getByClaimReferenceNumber(claim.getReferenceNumber(), AUTHORISATION))
+                .thenReturn(Optional.of(claim));
 
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.getClaimByReference(claim.getReferenceNumber(), AUTHORISATION);
+            claimService.getClaimByReference(claim.getReferenceNumber(), AUTHORISATION);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void requestMoreTimeShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER))
-            .thenReturn(Optional.of(claim));
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(UNAUTHORISED_USER);
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(caseRepository.getClaimByExternalId(claim.getExternalId(), UNAUTHORISED_USER))
+                .thenReturn(Optional.of(claim));
+            when(userService.getUser(eq(AUTHORISATION))).thenReturn(UNAUTHORISED_USER);
 
-        claimService.requestMoreTimeForResponse(claim.getExternalId(), AUTHORISATION);
+            claimService.requestMoreTimeForResponse(claim.getExternalId(), AUTHORISATION);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void getByDefendantIdShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(UNAUTHORISED_USER_DETAILS);
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(UNAUTHORISED_USER_DETAILS);
 
-        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
+            claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void paidInFullShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), USER))
-            .thenReturn(Optional.of(claim));
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(caseRepository.getClaimByExternalId(claim.getExternalId(), USER))
+                .thenReturn(Optional.of(claim));
 
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.paidInFull(claim.getExternalId(), new PaidInFull(now()), AUTHORISATION);
+            claimService.paidInFull(claim.getExternalId(), new PaidInFull(now()), AUTHORISATION);
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void saveReDeterminationShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+        assertThrows(ForbiddenActionException.class, () -> {
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.saveReDetermination(AUTHORISATION, claim, new ReDetermination("", MadeBy.CLAIMANT));
+            claimService.saveReDetermination(AUTHORISATION, claim, new ReDetermination("", MadeBy.CLAIMANT));
+        });
     }
 
     @Test
@@ -674,23 +700,27 @@ public class ClaimServiceTest {
             eq(claim.getReferenceNumber()));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void saveReviewOrderShouldThrowConflictExceptionIfAlreadyExists() {
-        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
+        assertThrows(ConflictException.class, () -> {
+            ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(createSampleClaim().withReviewOrder(reviewOrder).build()));
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+                .thenReturn(Optional.of(createSampleClaim().withReviewOrder(reviewOrder).build()));
 
-        claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
+            claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void saveReviewOrderShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
+        assertThrows(NotFoundException.class, () -> {
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
-        claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+            claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+        });
     }
 
     @Test
@@ -726,18 +756,20 @@ public class ClaimServiceTest {
             VALID_APP.getExternalId().toString());
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void saveHelpWithFeesClaimShouldThrowConflictExceptionIfAlreadyExists() {
-        ClaimData claimData = SampleClaimData.builder()
-            .withHelpWithFeesNumber("HWF01234")
-            .withHelpWithFeesType("ClaimIssue").build();
+        assertThrows(ConflictException.class, () -> {
+            ClaimData claimData = SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF01234")
+                .withHelpWithFeesType("ClaimIssue").build();
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(mock(Claim.class)));
+            when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+                .thenReturn(Optional.of(mock(Claim.class)));
 
-        claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+            claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
-        verifyNoInteractions(appInsights);
+            verifyNoInteractions(appInsights);
+        });
     }
 
     @Test
@@ -971,15 +1003,16 @@ public class ClaimServiceTest {
         verify(caseRepository).updatePreferredCourtByClaimReference(claim);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void shouldThrowExceptionWhenNoClaimRefFoundForupdatePreferredCourtByClaimReference() {
+        assertThrows(NotFoundException.class, () -> {
+            Optional<Claim> result = empty();
+            String claimNumber = "0";
+            lenient().when(claimService.getClaimByReferenceAnonymous(
+                claim.getReferenceNumber())).thenReturn(result);
 
-        Optional<Claim> result = empty();
-        String claimNumber = "0";
-        when(claimService.getClaimByReferenceAnonymous(
-            claim.getReferenceNumber())).thenReturn(result);
-
-        claimService.updatePreferredCourtByClaimReference(claimNumber);
+            claimService.updatePreferredCourtByClaimReference(claimNumber);
+        });
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {

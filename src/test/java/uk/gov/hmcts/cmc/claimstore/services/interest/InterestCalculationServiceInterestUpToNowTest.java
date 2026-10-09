@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.interest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InterestCalculationServiceInterestUpToNowTest {
 
@@ -25,19 +26,25 @@ public class InterestCalculationServiceInterestUpToNowTest {
 
     private final InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullAmount() {
-        service.calculateInterestUpToNow(null, THIRTEEN_PERCENT_INTEREST, TWENTY_DAYS_AGO);
+        assertThrows(NullPointerException.class, () -> {
+            service.calculateInterestUpToNow(null, THIRTEEN_PERCENT_INTEREST, TWENTY_DAYS_AGO);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullRate() {
-        service.calculateInterestUpToNow(HUNDRED_POUNDS, null, TWENTY_DAYS_AGO);
+        assertThrows(NullPointerException.class, () -> {
+            service.calculateInterestUpToNow(HUNDRED_POUNDS, null, TWENTY_DAYS_AGO);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullInterestDate() {
-        service.calculateInterestUpToNow(HUNDRED_POUNDS, THIRTEEN_PERCENT_INTEREST, null);
+        assertThrows(NullPointerException.class, () -> {
+            service.calculateInterestUpToNow(HUNDRED_POUNDS, THIRTEEN_PERCENT_INTEREST, null);
+        });
     }
 
     @Test

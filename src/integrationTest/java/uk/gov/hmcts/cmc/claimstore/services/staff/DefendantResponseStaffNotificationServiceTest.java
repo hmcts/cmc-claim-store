@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -50,7 +50,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Captor

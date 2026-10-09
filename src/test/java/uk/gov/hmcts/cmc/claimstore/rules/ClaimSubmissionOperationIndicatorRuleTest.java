@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -31,7 +31,7 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
         ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
         try {
             operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
-            Assert.fail("Expected a BadRequestException to be thrown");
+            Assertions.fail("Expected a BadRequestException to be thrown");
         } catch (BadRequestException expected) {
             assertThat(expected).hasMessage("Invalid input. The following indicator(s)[claimantNotification, "
                 + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, "
@@ -72,7 +72,7 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
         ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
         try {
             operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
-            Assert.fail("Expected a BadRequestException to be thrown");
+            Assertions.fail("Expected a BadRequestException to be thrown");
         } catch (BadRequestException expected) {
             assertThat(expected).hasMessage("Invalid input. The following indicator(s)[sealedClaimUpload,"
                 + " claimIssueReceiptUpload] cannot be set to NO");

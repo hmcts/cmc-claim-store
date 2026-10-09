@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RETURNED_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.TRANSFERRED_OUT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AppInsightsCallbackHandlerTest {
     private AppInsightsCallbackHandler appInsightsCallbackHandler;
     @Mock
@@ -40,7 +40,7 @@ public class AppInsightsCallbackHandlerTest {
     private CallbackRequest callbackRequest;
     private CallbackParams callbackParams;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         appInsightsCallbackHandler = new AppInsightsCallbackHandler(appInsights, caseDetailsConverter);
     }

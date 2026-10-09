@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 
 import com.google.common.collect.ImmutableList;
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
@@ -42,7 +42,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9Form
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BulkPrintHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: let me in";

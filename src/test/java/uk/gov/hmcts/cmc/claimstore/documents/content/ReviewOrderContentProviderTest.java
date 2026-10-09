@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReviewOrderContentProviderTest {
 
@@ -74,17 +75,21 @@ public class ReviewOrderContentProviderTest {
         );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowWhenClaimDoesNotHaveReviewOrder() {
-        Claim claim = SampleClaim.builder()
-            .withReviewOrder(null)
-            .build();
-        provider.createContent(claim);
+        assertThrows(IllegalStateException.class, () -> {
+            Claim claim = SampleClaim.builder()
+                .withReviewOrder(null)
+                .build();
+            provider.createContent(claim);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenGivenNullClaim() {
-        //noinspection ConstantConditions
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            //noinspection ConstantConditions
+            provider.createContent(null);
+        });
     }
 }

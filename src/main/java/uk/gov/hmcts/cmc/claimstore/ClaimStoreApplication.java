@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.metrics.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication(
@@ -11,6 +11,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         DataSourceAutoConfiguration.class,
         DataSourcePoolMetricsAutoConfiguration.class
     },
+    // Registers a Spring Boot 3 health indicator; replaced by healthcheck.SendLetterHealthIndicator
+    excludeName = "uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration",
     scanBasePackages = {
         "uk.gov.hmcts.cmc",
         "uk.gov.hmcts.reform.fees.client"
