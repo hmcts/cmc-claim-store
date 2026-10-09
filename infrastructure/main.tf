@@ -165,7 +165,7 @@ module "db-v15" {
   component            = var.component
   common_tags          = var.common_tags
   pgsql_version        = 15
-
+  service_criticality = var.service_criticality
 
   pgsql_databases = [
     {
