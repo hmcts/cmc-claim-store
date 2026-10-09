@@ -35,7 +35,11 @@ def secrets = [
     secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
     secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
     secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-    secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN')
+    secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
+    secret('fact_cmc_client_id', 'FACT_CMC_CLIENT_ID'),
+    secret('fact_cmc_client_secret', 'FACT_CMC_CLIENT_SECRET'),
+    secret('fact_tenant_id', 'FACT_TENANT_ID'),
+    secret('fact_data_api_client_id', 'FACT_DATA_API_CLIENT_ID')
   ],
   'am-${env}': [
     secret('am-role-assignment-service-s2s-secret', 'AM_ROLE_ASSIGNMENT_SERVICE_SECRET'),

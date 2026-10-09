@@ -64,6 +64,14 @@ java:
           alias: staff-notifications.legalRecipient
         - name: appinsights-connection-string
           alias: appinsights-connection-string
+        - name: fact_cmc_client_id
+          alias: FACT_CMC_CLIENT_ID
+        - name: fact_cmc_client_secret
+          alias: FACT_CMC_CLIENT_SECRET
+        - name: fact_tenant_id
+          alias: FACT_TENANT_ID
+        - name: fact_data_api_client_id
+          alias: FACT_DATA_API_CLIENT_ID
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -106,7 +114,7 @@ java:
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/realms/root/realms/hmcts
-    COURT_FINDER_API_URL: http://fact-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    COURT_FINDER_API_URL: https://cft-api-mgmt.{{ .Values.global.environment }}.platform.hmcts.net/fact
     MANAGEMENT_HEALTH_MAIL_ENABLED: false
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
     REFERENCE_DATABASE_MIGRATION: true

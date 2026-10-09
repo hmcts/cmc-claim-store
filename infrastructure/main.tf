@@ -108,6 +108,26 @@ data "azurerm_key_vault_secret" "oauth_client_secret" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
+data "azurerm_key_vault_secret" "fact_cmc_client_id" {
+  name         = "fact_cmc_client_id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "fact_cmc_client_secret" {
+  name         = "fact_cmc_client_secret"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "fact_tenant_id" {
+  name         = "fact_tenant_id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "fact_data_api_client_id" {
+  name         = "fact_data_api_client_id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
 data "azurerm_key_vault_secret" "launch_darkly_sdk_key" {
   name         = "launchDarkly-sdk-key"
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id

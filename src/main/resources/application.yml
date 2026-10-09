@@ -98,7 +98,11 @@ idam:
 
 courtfinder:
   api:
-    url: "${COURT_FINDER_API_URL:https://www.find-court-tribunal.service.gov.uk}"
+    url: "${COURT_FINDER_API_URL:https://cft-api-mgmt.platform.hmcts.net/fact}"
+    client_id: "${FACT_CMC_CLIENT_ID:}"
+    client_secret: "${FACT_CMC_CLIENT_SECRET:}"
+    tenant_id: "${FACT_TENANT_ID:}"
+    fact_data_api_id: "${FACT_DATA_API_CLIENT_ID:}"
 
 fees:
   api:
