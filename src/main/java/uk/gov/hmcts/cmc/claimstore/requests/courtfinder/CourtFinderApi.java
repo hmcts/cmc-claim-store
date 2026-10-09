@@ -9,12 +9,13 @@ import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.Search
 
 import java.util.List;
 
-@FeignClient(name = "court-finder-api", primary = false, url = "${courtfinder.api.url}")
+@FeignClient(name = "court-finder-api", primary = false, url = "${courtfinder.api.url}",
+    configuration = CourtFinderClientConfiguration.class)
 public interface CourtFinderApi {
 
-    String SEARCH_POSTCODE_URL = "/search/results?postcode={postcode}&serviceArea=money-claims";
-    String SEARCH_NAME_URL = "/courts?q={name}";
-    String COURT_DETAILS_URL = "/courts/{slug}";
+    String SEARCH_POSTCODE_URL = "/search/courts/v1/postcode?postcode={postcode}&serviceArea=money-claims";
+    String SEARCH_NAME_URL = "/courts/name/v1?name={name}";
+    String COURT_DETAILS_URL = "/courts/slug/{slug}/v1";
 
     @GetMapping(value = SEARCH_POSTCODE_URL)
     SearchCourtByPostcodeResponse findMoneyClaimCourtByPostcode(@PathVariable("postcode") String postcode);
@@ -24,5 +25,4 @@ public interface CourtFinderApi {
 
     @GetMapping(value = SEARCH_NAME_URL)
     List<SearchCourtByNameResponse> findMoneyClaimCourtByName(@PathVariable("name") String name);
-
 }
