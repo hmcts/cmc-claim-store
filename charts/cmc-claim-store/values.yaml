@@ -64,13 +64,13 @@ java:
           alias: staff-notifications.legalRecipient
         - name: appinsights-connection-string
           alias: appinsights-connection-string
-        - name: fact_cmc_client_id
+        - name: fact-cmc-client-id
           alias: FACT_CMC_CLIENT_ID
-        - name: fact_cmc_client_secret
+        - name: fact-cmc-client-secret
           alias: FACT_CMC_CLIENT_SECRET
-        - name: fact_tenant_id
+        - name: fact-tenant-id
           alias: FACT_TENANT_ID
-        - name: fact_data_api_client_id
+        - name: fact-data-api-client-id
           alias: FACT_DATA_API_CLIENT_ID
   environment:
     REFORM_TEAM: cmc
