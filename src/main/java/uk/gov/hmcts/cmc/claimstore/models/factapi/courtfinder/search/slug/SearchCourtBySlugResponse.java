@@ -12,10 +12,10 @@ import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Address;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Facilities;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Data
 @AllArgsConstructor
@@ -34,7 +34,6 @@ public class SearchCourtBySlugResponse {
     private String name;
 
     private String slug;
-
 
     @JsonSetter("courtAddresses")
     public void readCourtAddresses(List<FactAddress> courtAddresses) {
