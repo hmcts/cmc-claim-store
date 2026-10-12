@@ -202,3 +202,43 @@ resource "azurerm_key_vault_secret" "cmc-db-host-v15" {
   value        = module.db-v15.fqdn
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
+
+resource "azurerm_key_vault_secret" "fact_cmc_client_id" {
+  name         = "fact-cmc-client-id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+  value        = "REPLACE_ME"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "azurerm_key_vault_secret" "fact_cmc_client_secret" {
+  name         = "fact-cmc-client-secret"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+  value        = "REPLACE_ME"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "azurerm_key_vault_secret" "fact_tenant_id" {
+  name         = "fact-tenant-id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+  value        = "REPLACE_ME"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "azurerm_key_vault_secret" "fact_data_api_client_id" {
+  name         = "fact-data-api-client-id"
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+  value        = "REPLACE_ME"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
