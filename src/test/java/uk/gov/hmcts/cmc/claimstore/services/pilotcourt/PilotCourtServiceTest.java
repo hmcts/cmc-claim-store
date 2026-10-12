@@ -34,7 +34,9 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -158,12 +160,39 @@ class PilotCourtServiceTest {
 
         pilotCourtService.init();
 
+        verifyNoInteractions(courtFinderService, hearingCourtMapper);
+
         HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
         when(hearingCourtMapper.from(any())).thenReturn(hearingCourt);
 
         HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM").get();
 
         assertEquals(hearingCourt, actualHearingCourt);
+        assertEquals(Optional.of(hearingCourt), pilotCourtService.getPilotHearingCourt("BIRMINGHAM"));
+        verify(courtFinderService).getCourtDetailsListFromPostcode("B1 1AA");
+        verify(hearingCourtMapper).from(courtDetailsListFromPostcode.getFirst());
+    }
+
+    @Test
+    void shouldRetryFailedOnDemandLookupAndCacheRecoveredCourt() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle, courtFinderService, hearingCourtMapper, appInsights);
+        pilotCourtService.init();
+
+        List<Court> courtDetails = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
+        HearingCourt hearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
+        when(courtFinderService.getCourtDetailsListFromPostcode("B1 1AA"))
+            .thenThrow(createFeignException())
+            .thenReturn(courtDetails);
+        when(hearingCourtMapper.from(courtDetails.getFirst())).thenReturn(hearingCourt);
+
+        assertTrue(pilotCourtService.getPilotHearingCourt("BIRMINGHAM").isEmpty());
+        assertEquals(Optional.of(hearingCourt), pilotCourtService.getPilotHearingCourt("BIRMINGHAM"));
+        assertEquals(Optional.of(hearingCourt), pilotCourtService.getPilotHearingCourt("BIRMINGHAM"));
+
+        verify(courtFinderService, times(2)).getCourtDetailsListFromPostcode("B1 1AA");
+        verify(hearingCourtMapper).from(courtDetails.getFirst());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B1 1AA");
     }
 
     @Test
@@ -186,7 +215,7 @@ class PilotCourtServiceTest {
     }
 
     @Test
-    void shouldGracefullyHandleCourtLookupExceptionsDuringInit() {
+    void shouldGracefullyHandleCourtLookupExceptionsOnDemand() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderService,
@@ -208,7 +237,7 @@ class PilotCourtServiceTest {
     }
 
     @Test
-    void shouldHandleDecodeExceptionDuringInit() {
+    void shouldHandleDecodeExceptionOnDemand() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderService,
@@ -235,7 +264,7 @@ class PilotCourtServiceTest {
     }
 
     @Test
-    void shouldHandleUnexpectedRuntimeExceptionDuringInit() {
+    void shouldHandleUnexpectedRuntimeExceptionOnDemand() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderService,
@@ -269,9 +298,6 @@ class PilotCourtServiceTest {
             hearingCourtMapper,
             appInsights
         );
-
-        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
-            .thenReturn(emptyList());
 
         Assertions.assertThrows(AssertionError.class, pilotCourtService::init);
     }
@@ -339,6 +365,7 @@ class PilotCourtServiceTest {
             Set<String> expectedPilotCourtIds = DataFactory.createStringSetFromJson(PILOT_COURT_ALL_COURTS);
 
             assertEquals(expectedPilotCourtIds, actualPilotCourtIds);
+            verifyNoInteractions(courtFinderService, hearingCourtMapper, appInsights);
         }
 
         @Test
@@ -359,8 +386,6 @@ class PilotCourtServiceTest {
 
         @Test
         void shouldReturnEmptySetWhenNoActivePilotCourtsMatch() {
-            when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
-                .thenReturn(emptyList());
 
             PilotCourtService pilotCourtService = new PilotCourtService(
                 csvPathSingle,
