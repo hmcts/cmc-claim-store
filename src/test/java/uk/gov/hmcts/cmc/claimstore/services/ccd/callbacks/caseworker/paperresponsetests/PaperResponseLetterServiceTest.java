@@ -33,7 +33,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.Collections;
-
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;

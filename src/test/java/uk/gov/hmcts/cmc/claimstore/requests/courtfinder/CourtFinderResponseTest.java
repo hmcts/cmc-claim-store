@@ -17,10 +17,9 @@ class CourtFinderResponseTest {
 
     @Test
     void shouldDecodePostcodeSearchArray() throws Exception {
-        List<CourtDetails> courts = mapper.readValue("""
-            [{"courtId":"00000000-0000-0000-0000-000000000001",
-              "courtName":"Example Court","courtSlug":"example-court","distance":1.25}]
-            """, new TypeReference<>() { });
+        List<CourtDetails> courts = mapper.readValue(
+            "[{\"courtId\":\"00000000-0000-0000-0000-000000000001\","
+                + "\"courtName\":\"Example Court\",\"courtSlug\":\"example-court\",\"distance\":1.25}]", new TypeReference<>() { });
 
         assertThat(courts).hasSize(1);
         assertThat(courts.getFirst().getName()).isEqualTo("Example Court");
@@ -31,10 +30,9 @@ class CourtFinderResponseTest {
 
     @Test
     void shouldDecodeSingleCourtByName() throws Exception {
-        SearchCourtByNameResponse court = mapper.readValue("""
-            {"id":"00000000-0000-0000-0000-000000000001","name":"Example Court",
-             "slug":"example-court","open":true,"lastUpdatedAt":"2026-10-12T12:00:00Z"}
-            """, SearchCourtByNameResponse.class);
+        SearchCourtByNameResponse court = mapper.readValue(
+            "{\"id\":\"00000000-0000-0000-0000-000000000001\",\"name\":\"Example Court\","
+                + "\"slug\":\"example-court\",\"open\":true,\"lastUpdatedAt\":\"2026-10-12T12:00:00Z\"}", SearchCourtByNameResponse.class);
 
         assertThat(court.getName()).isEqualTo("Example Court");
         assertThat(court.getSlug()).isEqualTo("example-court");
@@ -44,14 +42,13 @@ class CourtFinderResponseTest {
 
     @Test
     void shouldMapSlugDetailsToClaimStoreCourtFields() throws Exception {
-        SearchCourtBySlugResponse court = mapper.readValue("""
-            {"name":"Example Court","slug":"example-court",
-             "courtAddresses":[{"addressLine1":"1 High Street","addressLine2":null,
-                "townCity":"Hull","postcode":"HU1 2EZ","addressType":"WRITE_TO_US"}],
-             "courtAreasOfLaw":[{"areasOfLaw":[{"name":"Money claims",
-                "displayName":"Money claims","externalLink":"https://example.com"}]}],
-             "courtFacilities":[{"parking":true,"wifi":true,"quietRoom":false}]}
-            """, SearchCourtBySlugResponse.class);
+        SearchCourtBySlugResponse court = mapper.readValue(
+            "{\"name\":\"Example Court\",\"slug\":\"example-court\","
+                + "\"courtAddresses\":[{\"addressLine1\":\"1 High Street\",\"addressLine2\":null,"
+                + "\"townCity\":\"Hull\",\"postcode\":\"HU1 2EZ\",\"addressType\":\"WRITE_TO_US\"}],"
+                + "\"courtAreasOfLaw\":[{\"areasOfLaw\":[{\"name\":\"Money claims\","
+                + "\"displayName\":\"Money claims\",\"externalLink\":\"https://example.com\"}]}],"
+                + "\"courtFacilities\":[{\"parking\":true,\"wifi\":true,\"quietRoom\":false}]}", SearchCourtBySlugResponse.class);
 
         assertThat(court.getAddresses()).hasSize(1);
         assertThat(court.getAddresses().getFirst().getAddressLines()).containsExactly("1 High Street");
