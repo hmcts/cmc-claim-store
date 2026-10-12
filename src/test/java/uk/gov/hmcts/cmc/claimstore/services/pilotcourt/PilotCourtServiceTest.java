@@ -69,7 +69,7 @@ class PilotCourtServiceTest {
 
     private FeignException createFeignException() {
         Map<String, Collection<String>> headers = new HashMap<>();
-        Request request = Request.create(
+        Request request1 = Request.create(
             Request.HttpMethod.GET,
             "/test",
             headers,
@@ -79,7 +79,7 @@ class PilotCourtServiceTest {
         Response response = Response.builder()
             .status(500)
             .reason("failure")
-            .request(request)
+            .request(request1)
             .headers(headers)
             .body(new byte[0])
             .build();
@@ -88,14 +88,14 @@ class PilotCourtServiceTest {
 
     private DecodeException createDecodeException() {
         Map<String, Collection<String>> headers = new HashMap<>();
-        Request request = Request.create(
+        Request request1 = Request.create(
             Request.HttpMethod.GET,
             "/test",
             headers,
             Request.Body.empty(),
             new RequestTemplate()
         );
-        return new DecodeException(500, "decode failure", request);
+        return new DecodeException(500, "decode failure", request1);
     }
 
     @Test
@@ -203,7 +203,7 @@ class PilotCourtServiceTest {
         Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
 
         assertTrue(result.isEmpty());
-        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B1 1AA");
         verify(hearingCourtMapper, never()).from(any());
     }
 
@@ -230,7 +230,7 @@ class PilotCourtServiceTest {
         Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
 
         assertTrue(result.isEmpty());
-        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B1 1AA");
         verify(hearingCourtMapper, never()).from(any());
     }
 
@@ -257,7 +257,7 @@ class PilotCourtServiceTest {
         Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
 
         assertTrue(result.isEmpty());
-        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B1 1AA");
         verify(hearingCourtMapper, never()).from(any());
     }
 
@@ -313,14 +313,14 @@ class PilotCourtServiceTest {
 
         @Test
         void shouldThrowIllegalStateExceptionOnInvalidCSVPath() {
-            Assertions.assertThrows(IllegalStateException.class, () ->
-                new PilotCourtService(
-                    "InvalidPath",
-                    courtFinderService,
-                    hearingCourtMapper,
-                    appInsights
-                ).init()
+            PilotCourtService pilotCourtService = new PilotCourtService(
+                "InvalidPath",
+                courtFinderService,
+                hearingCourtMapper,
+                appInsights
             );
+
+            Assertions.assertThrows(IllegalStateException.class, pilotCourtService::init);
         }
 
         @Test
@@ -404,9 +404,7 @@ class PilotCourtServiceTest {
     class IsPilotCourtTests {
 
         private final String pilotCourtName = "Edmonton County Court and Family Court";
-        private final String pilotCourtPostcode = "N182TN";
         private final String nonPilotCourtName = "Manchester Civil Justice Centre (Civil and Family Courts)";
-        private final String nonPilotCourtPostcode = "M609DJ";
         private PilotCourtService pilotCourtService;
 
         @BeforeEach
