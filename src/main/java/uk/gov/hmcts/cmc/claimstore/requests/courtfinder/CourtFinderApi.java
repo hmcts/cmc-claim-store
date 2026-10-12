@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 
 import java.util.List;
@@ -13,16 +13,16 @@ import java.util.List;
     configuration = CourtFinderClientConfiguration.class)
 public interface CourtFinderApi {
 
-    String SEARCH_POSTCODE_URL = "/search/courts/v1/postcode?postcode={postcode}&serviceArea=money-claims";
+    String SEARCH_POSTCODE_URL = "/search/courts/v1/postcode?postcode={postcode}&serviceArea=Money claims&action=NEAREST";
     String SEARCH_NAME_URL = "/courts/name/v1?name={name}";
     String COURT_DETAILS_URL = "/courts/slug/{slug}/v1";
 
     @GetMapping(value = SEARCH_POSTCODE_URL)
-    SearchCourtByPostcodeResponse findMoneyClaimCourtByPostcode(@PathVariable("postcode") String postcode);
+    List<CourtDetails> findMoneyClaimCourtByPostcode(@PathVariable("postcode") String postcode);
 
     @GetMapping(value = COURT_DETAILS_URL)
     SearchCourtBySlugResponse getCourtDetailsFromNameSlug(@PathVariable("slug") String courtNameSlug);
 
     @GetMapping(value = SEARCH_NAME_URL)
-    List<SearchCourtByNameResponse> findMoneyClaimCourtByName(@PathVariable("name") String name);
+    SearchCourtByNameResponse findMoneyClaimCourtByName(@PathVariable("name") String name);
 }

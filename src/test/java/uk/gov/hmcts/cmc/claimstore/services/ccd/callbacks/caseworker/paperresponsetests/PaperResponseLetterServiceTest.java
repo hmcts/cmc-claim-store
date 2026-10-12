@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
@@ -33,6 +33,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.Collections;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -193,7 +195,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
 
@@ -220,7 +222,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
@@ -245,7 +247,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
@@ -281,7 +283,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
@@ -308,7 +310,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
@@ -336,7 +338,7 @@ class PaperResponseLetterServiceTest {
             when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
                 .thenReturn(searchCourtBySlugResponse);
 
-            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            List<CourtDetails> searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
                 .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,

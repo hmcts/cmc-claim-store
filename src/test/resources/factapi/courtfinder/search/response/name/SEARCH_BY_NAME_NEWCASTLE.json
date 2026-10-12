@@ -1,8 +1,6 @@
-[
-  {
-    "displayed": true,
-    "name": "Newcastle Civil & Family Courts and Tribunals Centre",
-    "slug": "newcastle-civil-family-courts-and-tribunals-centre",
-    "updated_at": "string"
-  }
-]
+{
+  "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+  "slug": "newcastle-civil-family-courts-and-tribunals-centre",
+  "open": true,
+  "lastUpdatedAt": "string"
+}

@@ -49,7 +49,7 @@ public class CourtFinderApiTest {
     public void shouldUseVersionedPostcodeEndpointWithBearerToken() {
         api.findMoneyClaimCourtByPostcode("NE1 4LP");
 
-        assertRequest("/search/courts/v1/postcode?postcode=NE1%204LP&serviceArea=money-claims");
+        assertRequest("/search/courts/v1/postcode?postcode=NE1%204LP&serviceArea=Money%20claims&action=NEAREST");
     }
 
     @Test
