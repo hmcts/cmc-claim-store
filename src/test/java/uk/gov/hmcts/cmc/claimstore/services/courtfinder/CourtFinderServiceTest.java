@@ -13,7 +13,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.CourtFinderController;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 
@@ -90,6 +92,22 @@ public class CourtFinderServiceTest {
     }
 
     @Test
+    public void shouldRetrieveDetailsForSingleCourtReturnedByName() {
+        CourtFinderService service = new CourtFinderService(courtFinderApi);
+        when(courtFinderApi.findMoneyClaimCourtByName(COURT_NAME))
+            .thenReturn(SearchCourtByNameResponse.builder().name(COURT_NAME).slug("example-court").build());
+        when(courtFinderApi.getCourtDetailsFromNameSlug("example-court"))
+            .thenReturn(SearchCourtBySlugResponse.builder().name(COURT_NAME).slug("example-court")
+                .areasOfLaw(moneyClaimAOEList).build());
+
+        List<Court> courts = service.getCourtsByName(COURT_NAME);
+
+        assertThat(courts).hasSize(1);
+        assertThat(courts.get(0).getName()).isEqualTo(COURT_NAME);
+        assertThat(courts.get(0).getSlug()).isEqualTo("example-court");
+    }
+
+    @Test
     public void shouldReturnEmptyListWhenPostcodeLookupFailsGracefully() {
         CourtFinderService service = new CourtFinderService(courtFinderApi);
         when(courtFinderApi.findMoneyClaimCourtByPostcode("NE1"))
@@ -104,9 +122,9 @@ public class CourtFinderServiceTest {
     @Test
     public void shouldReturnSlugOnlyWhenCourtDetailsLookupFails() {
         CourtFinderService service = new CourtFinderService(courtFinderApi);
-        SearchCourtByPostcodeResponse searchResponse =
+        List<CourtDetails> searchResponse =
             DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
-        String expectedSlug = searchResponse.getCourts().get(0).getSlug();
+        String expectedSlug = searchResponse.get(0).getSlug();
 
         when(courtFinderApi.findMoneyClaimCourtByPostcode("NE1"))
             .thenReturn(searchResponse);

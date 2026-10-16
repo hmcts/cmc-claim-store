@@ -1,6 +1,9 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  # Allow 30 minutes for 138 sequential Court Finder lookups during an API outage.
+  startupPeriod: 10
+  startupFailureThreshold: 180
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
@@ -60,6 +63,14 @@ java:
           alias: staff-notifications.legalRecipient
         - name: appinsights-connection-string
           alias: appinsights-connection-string
+        - name: fact-cmc-client-id
+          alias: FACT_CMC_CLIENT_ID
+        - name: fact-cmc-client-secret
+          alias: FACT_CMC_CLIENT_SECRET
+        - name: fact-tenant-id
+          alias: FACT_TENANT_ID
+        - name: fact-data-api-client-id
+          alias: FACT_DATA_API_CLIENT_ID
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: "{{ .Values.postgresql.releaseNameOverride}}"
