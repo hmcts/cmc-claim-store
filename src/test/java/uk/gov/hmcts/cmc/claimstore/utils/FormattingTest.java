@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FormattingTest {
 
@@ -38,9 +39,11 @@ public class FormattingTest {
         assertThat(Formatting.formatDate((LocalDate) null)).isEmpty();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void formatDateShouldThrowNullPointerWhenGivenNullDateTime() {
-        Formatting.formatDate((LocalDateTime) null);
+        assertThrows(NullPointerException.class, () -> {
+            Formatting.formatDate((LocalDateTime) null);
+        });
     }
 
     @Test
@@ -52,9 +55,11 @@ public class FormattingTest {
         assertThat(formattedDate).matches("27 February 2017 at 5:44(?i)pm");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void formatDateTimeShouldThrowNullPointerWhenGivenNullDateTime() {
-        Formatting.formatDateTime(null);
+        assertThrows(NullPointerException.class, () -> {
+            Formatting.formatDateTime(null);
+        });
     }
 
     @Test
@@ -84,9 +89,11 @@ public class FormattingTest {
         assertThat(formatted).isEqualTo("£123,456.50");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void formatMoneyShouldThrowNullPointerWhenGivenNullAmount() {
-        Formatting.formatMoney((BigInteger) null);
+        assertThrows(NullPointerException.class, () -> {
+            Formatting.formatMoney((BigInteger) null);
+        });
     }
 
     @Test
@@ -98,9 +105,11 @@ public class FormattingTest {
         assertThat(formattedDate).isEqualTo("27 July 2017");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void formatPercentShouldThrowNullPointerForNullArgument() {
-        Formatting.formatPercent(null);
+        assertThrows(NullPointerException.class, () -> {
+            Formatting.formatPercent(null);
+        });
     }
 
     @Test

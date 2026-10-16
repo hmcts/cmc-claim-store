@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDateTime;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OfferResponseDeadlineCalculatorTest {
 
     private static final int DAYS_FOR_RESPONSE = 14;
@@ -33,7 +33,7 @@ public class OfferResponseDeadlineCalculatorTest {
     @Mock
     private NonWorkingDaysCollection nonWorkingDaysCollection;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         when(publicHolidaysCollection.getPublicHolidays()).thenReturn(new TreeSet<>());

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -42,10 +42,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     private static final User CASEWORKER = new User(BEARER_TOKEN, SampleUserDetails.builder()
         .withRoles(Role.CASEWORKER.getRole()).build());
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected CaseRepository caseRepository;
 
     @BeforeEach

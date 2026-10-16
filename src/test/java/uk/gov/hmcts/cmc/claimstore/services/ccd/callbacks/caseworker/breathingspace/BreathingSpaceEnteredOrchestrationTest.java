@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.breathingspace;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BreathingSpaceEnteredOrchestrationTest {
 
     public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
@@ -59,7 +59,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     @Mock
     private RpaOperationService rpaOperationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         handler = new BreathingSpaceEntetedOrchestrationHandler(breathingSpaceLetterService,
             breathingSpaceEmailService, documentOrchestrationService, rpaOperationService, appInsights);

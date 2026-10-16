@@ -1,10 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TheirDetailsHelperTest {
 
@@ -32,8 +33,10 @@ public class TheirDetailsHelperTest {
         assertThat(TheirDetailsHelper.isDefendantBusiness(defendant)).isFalse();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerExceptionIfDefendantIsNull() {
-        assertThat(TheirDetailsHelper.isDefendantBusiness(null)).isFalse();
+        assertThrows(NullPointerException.class, () -> {
+            assertThat(TheirDetailsHelper.isDefendantBusiness(null)).isFalse();
+        });
     }
 }

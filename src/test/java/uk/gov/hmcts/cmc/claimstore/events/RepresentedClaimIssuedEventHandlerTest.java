@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RepresentedClaimIssuedEventHandlerTest {
     private static final String REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE = "representativeClaimIssued";
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -35,7 +35,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setup() {
         representativeConfirmationHandler = new RepresentativeConfirmationHandler(
             claimIssuedNotificationService,

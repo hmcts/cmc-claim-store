@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENDANT_RESPONSE_UPLOAD;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Defendant response upload")
 public class DefendantResponseReceiptUploadCallbackHandlerTest {
     @InjectMocks
@@ -48,7 +48,7 @@ public class DefendantResponseReceiptUploadCallbackHandlerTest {
 
     private static final String LAST_EVENT_TRIGGERED = "DefendantResponseReceiptUpload";
 
-    @Before
+    @BeforeEach
     public void before() {
         this.defendantResponseReceiptUploadCallbackHandler =
             new DefendantResponseReceiptUploadCallbackHandler(

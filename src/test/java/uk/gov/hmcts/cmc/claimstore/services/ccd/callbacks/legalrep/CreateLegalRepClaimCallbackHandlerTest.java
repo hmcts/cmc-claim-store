@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legalrep;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -20,13 +20,13 @@ import java.util.Collections;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CreateLegalRepClaimCallbackHandlerTest {
 
     public static final String REFERENCE_NO = "000LR001";
@@ -43,7 +43,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
             caseDetailsConverter,
@@ -57,7 +57,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .caseDetails(caseDetails)
             .build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
+        lenient().when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
     }
 
     @Test

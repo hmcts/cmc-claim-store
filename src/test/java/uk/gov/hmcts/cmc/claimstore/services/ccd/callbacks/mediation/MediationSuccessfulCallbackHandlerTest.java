@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.MEDIATION_PILOT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MediationSuccessfulCallbackHandlerTest {
 
     @Mock
@@ -69,7 +69,7 @@ public class MediationSuccessfulCallbackHandlerTest {
 
     private static final String MEDIATION_SUCCESSFUL = "SuccessfulMediation";
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         mediationSuccessfulCallbackHandler = new MediationSuccessfulCallbackHandler(

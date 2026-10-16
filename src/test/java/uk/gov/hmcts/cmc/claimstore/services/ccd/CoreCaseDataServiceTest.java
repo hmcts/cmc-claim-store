@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.google.common.collect.Maps;
 import feign.FeignException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -64,14 +64,16 @@ import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,7 +97,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CoreCaseDataServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
@@ -134,11 +136,11 @@ public class CoreCaseDataServiceTest {
     private PilotCourtService pilotCourtService;
     private CoreCaseDataService service;
 
-    @Before
+    @BeforeEach
     public void before() {
-        when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(coreCaseDataApi.startEventForCitizen(
+        lenient().when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
+        lenient().when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
+        lenient().when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
             eq(USER_DETAILS.getId()),
@@ -153,7 +155,7 @@ public class CoreCaseDataServiceTest {
                 .token("token")
                 .build());
 
-        when(coreCaseDataApi.submitEventForCitizen(
+        lenient().when(coreCaseDataApi.submitEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
             eq(USER_DETAILS.getId()),
@@ -168,7 +170,7 @@ public class CoreCaseDataServiceTest {
                 .data(new HashMap<>())
                 .build());
 
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
+        lenient().when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
 
         this.service = new CoreCaseDataService(
             caseMapper,
@@ -523,22 +525,24 @@ public class CoreCaseDataServiceTest {
         assertNotNull(caseDetails);
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void shouldThrowExceptionForUpdatePreferredCourtByClaimReference() {
-        Claim providedClaim = SampleClaim.getDefault();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenThrow(new FeignException.UnprocessableEntity(
-                "Status 422 from CCD",
-                request,
-                new byte[]{},
-                Map.of())
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenThrow(new FeignException.UnprocessableEntity(
+                    "Status 422 from CCD",
+                    request,
+                    new byte[]{},
+                    Map.of())
+                );
+
+            CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
+                providedClaim.getId(),
+                "Central London County Court"
             );
-
-        CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
-            providedClaim.getId(),
-            "Central London County Court"
-        );
+        });
     }
 
     @Test

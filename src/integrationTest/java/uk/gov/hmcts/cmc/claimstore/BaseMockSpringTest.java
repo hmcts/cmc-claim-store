@@ -7,15 +7,16 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,12 +26,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -55,7 +58,6 @@ import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClient;
 
@@ -77,6 +79,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter.TOKEN_NAME;
 
 @ExtendWith(SpringExtension.class)
+// Boot 4 dropped the listener that initialised @Mock/@Captor fields in Spring tests; lenient matches its behaviour
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = {
@@ -111,67 +116,69 @@ public abstract class BaseMockSpringTest {
     @Autowired
     protected MockMvc webClient;
 
-    @MockBean
+    @MockitoBean
     protected OrderDrawnNotificationService orderDrawnNotificationService;
-    @MockBean
+    @MockitoBean
     protected SecuredDocumentManagementService securedDocumentManagementService;
-    @MockBean
+    @MockitoBean
     protected LegalOrderService legalOrderService;
-    @MockBean
+    @MockitoBean
     protected UserService userService;
-    @MockBean(name = "courtFinderApi")
+    @MockitoBean(name = "courtFinderApi")
     protected CourtFinderApi courtFinderApi;
-    @MockBean(name = "docAssemblyApi")
+    @MockitoBean(name = "docAssemblyApi")
     protected DocAssemblyApi docAssemblyApi;
-    @MockBean
+    @MockitoBean
     protected AuthTokenGenerator authTokenGenerator;
-    @MockBean
+    @MockitoBean
     protected AppInsights appInsights;
-    @MockBean
+    @MockitoBean
     protected ReferenceNumberRepository referenceNumberRepository;
-    @MockBean(name = "coreCaseDataApi")
+    @MockitoBean(name = "coreCaseDataApi")
     protected CoreCaseDataApi coreCaseDataApi;
-    @MockBean
+    @MockitoBean
     protected PaymentsService paymentsService;
-    @MockBean
+    @MockitoBean
     protected EventProducer eventProducer;
-    @MockBean
+    @MockitoBean
     protected PDFServiceClient pdfServiceClient;
-    @MockBean
+    @MockitoBean
     protected TelemetryClient telemetry;
-    @MockBean
+    @MockitoBean
     protected SendLetterApi sendLetterApi;
-    @MockBean
+    @MockitoBean
     protected NotificationClient notificationClient;
-    @MockBean
+    @MockitoBean
     protected JobService jobService;
-    @MockBean
+    @MockitoBean
     protected PilotCourtService pilotCourtService;
-    @MockBean
+    @MockitoBean
     protected DirectionOrderService directionOrderService;
-    @MockBean
+    @MockitoBean
     protected BankHolidaysApi bankHolidaysApi;
-    @MockBean
+    @MockitoBean
     protected Authentication authentication;
-    @MockBean
+    @MockitoBean
     protected SecurityContext securityContext;
-    @MockBean
+    @MockitoBean
     protected JwtDecoder jwtDecoder;
-    @MockBean
+    @MockitoBean
     private Flyway flyway;
-    @MockBean
+    @MockitoBean
     private TestingSupportRepository testingSupportRepository;
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockitoBean(name = "dataSource", answers = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
-    @MockBean
+    @MockitoBean
     private SpringBeanJobFactory springBeanJobFactory;
-    @MockBean
-    private SchedulerFactoryBean schedulerFactoryBean;
-    @MockBean
+    // Overrides the Scheduler that QuartzConfiguration's SchedulerFactoryBean creates, so Quartz never starts.
+    // Spring Framework 7 can't override a FactoryBean itself, only the object it produces.
+    @MockitoBean(name = "schedulerFactoryBean")
+    private Scheduler schedulerFactoryBeanScheduler;
+    @MockitoBean
     private Scheduler scheduler;
-    @MockBean(name = "transactionAwareDataSourceProxy")
+    @MockitoBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
-    @MockBean(name = "transactionManager")
+    @MockitoBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
     @BeforeEach

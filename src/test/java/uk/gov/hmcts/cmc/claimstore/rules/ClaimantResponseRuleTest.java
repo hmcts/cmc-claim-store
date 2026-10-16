@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -22,9 +22,10 @@ import java.time.LocalDate;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimantResponseRuleTest {
 
     private final ClaimantResponseRule claimantResponseRule = new ClaimantResponseRule();
@@ -37,25 +38,31 @@ public class ClaimantResponseRuleTest {
         ).doesNotThrowAnyException();
     }
 
-    @Test(expected = ClaimantLinkException.class)
+    @Test
     public void shouldThrowExceptionWheClaimantIsNotLinkedToTheCase() {
-        Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
-        claimantResponseRule.assertCanBeRequested(claim, "2");
+        assertThrows(ClaimantLinkException.class, () -> {
+            Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
+            claimantResponseRule.assertCanBeRequested(claim, "2");
+        });
     }
 
-    @Test(expected = ForbiddenActionException.class)
+    @Test
     public void shouldThrowExceptionWhenClaimWasNotRespondedTo() {
-        Claim claim = SampleClaim.builder().build();
-        claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+        assertThrows(ForbiddenActionException.class, () -> {
+            Claim claim = SampleClaim.builder().build();
+            claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+        });
     }
 
-    @Test(expected = ClaimantResponseAlreadySubmittedException.class)
+    @Test
     public void shouldThrowExceptionWhenClaimantResponseWasAlreadySubmitted() {
-        Claim claim = SampleClaim.builder().withRespondedAt(now().minusDays(2))
-            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
-            .withClaimantRespondedAt(now())
-            .build();
-        claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+        assertThrows(ClaimantResponseAlreadySubmittedException.class, () -> {
+            Claim claim = SampleClaim.builder().withRespondedAt(now().minusDays(2))
+                .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+                .withClaimantRespondedAt(now())
+                .build();
+            claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+        });
     }
 
     @Test()
@@ -106,41 +113,45 @@ public class ClaimantResponseRuleTest {
         ).doesNotThrowAnyException();
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenFormaliseOptionExpectedButCourtDeterminationMissing() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse
-            .ClaimantResponseAcceptation
-            .builder()
-            .buildAcceptationIssueSettlementWithClaimantPaymentIntention();
-        Claim claim = SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder().build()
-            )
-            .withRespondedAt(now().minusDays(2))
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
-            .withClaimantResponse(claimantResponse)
-            .withClaimantRespondedAt(now())
-            .build();
-        claimantResponseRule.isValid(claim);
+        assertThrows(BadRequestException.class, () -> {
+            ClaimantResponse claimantResponse = SampleClaimantResponse
+                .ClaimantResponseAcceptation
+                .builder()
+                .buildAcceptationIssueSettlementWithClaimantPaymentIntention();
+            Claim claim = SampleClaim.builder()
+                .withClaimData(
+                    SampleClaimData.builder().build()
+                )
+                .withRespondedAt(now().minusDays(2))
+                .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
+                .withClaimantResponse(claimantResponse)
+                .withClaimantRespondedAt(now())
+                .build();
+            claimantResponseRule.isValid(claim);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenFormaliseOptionExpectedMissing() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse
-            .ClaimantResponseAcceptation
-            .builder()
-            .withFormaliseOption(null)
-            .build();
-        Claim claim = SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder().build()
-            )
-            .withRespondedAt(now().minusDays(2))
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
-            .withClaimantResponse(claimantResponse)
-            .withClaimantRespondedAt(now())
-            .build();
-        claimantResponseRule.isValid(claim);
+        assertThrows(BadRequestException.class, () -> {
+            ClaimantResponse claimantResponse = SampleClaimantResponse
+                .ClaimantResponseAcceptation
+                .builder()
+                .withFormaliseOption(null)
+                .build();
+            Claim claim = SampleClaim.builder()
+                .withClaimData(
+                    SampleClaimData.builder().build()
+                )
+                .withRespondedAt(now().minusDays(2))
+                .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
+                .withClaimantResponse(claimantResponse)
+                .withClaimantRespondedAt(now())
+                .build();
+            claimantResponseRule.isValid(claim);
+        });
     }
 
     @Test

@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PersonContentProviderTest {
 
@@ -20,7 +21,7 @@ public class PersonContentProviderTest {
 
     private final PersonContentProvider provider = new PersonContentProvider();
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         partyType = "individual";
         name = "John James Smith";
@@ -41,19 +42,21 @@ public class PersonContentProviderTest {
         dateOfBirth = "1 January 1987";
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullName() {
-        provider.createContent(
-            partyType,
-            null,
-            address,
-            correspondenceAddress,
-            emailAddress,
-            null,
-            null,
-            null,
-            null
-        );
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(
+                partyType,
+                null,
+                address,
+                correspondenceAddress,
+                emailAddress,
+                null,
+                null,
+                null,
+                null
+            );
+        });
     }
 
     @Test

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimCreationEventsStatusServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final Claim CLAIM = SampleClaim.getDefault();
@@ -27,7 +27,7 @@ public class ClaimCreationEventsStatusServiceTest {
 
     private ClaimCreationEventsStatusService eventsStatusService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         eventsStatusService = new ClaimCreationEventsStatusService(caseRepository);
     }

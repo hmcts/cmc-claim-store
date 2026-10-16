@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHearingContentProvider;
@@ -43,7 +43,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
 
     private ClaimantRejectionStaffNotificationService service;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Autowired

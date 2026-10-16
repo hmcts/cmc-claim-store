@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +57,7 @@ class DocumentsControllerTest {
             "12345", AUTHORISATION)).thenReturn("123".getBytes());
         ResponseEntity<ByteArrayResource> pdfDocument = documentsController.document("GENERAL_LETTER:12345",
             claim.getExternalId(), AUTHORISATION);
-        Assert.assertEquals("123", new String(pdfDocument.getBody().getByteArray()));
+        Assertions.assertEquals("123", new String(pdfDocument.getBody().getByteArray()));
     }
 
 }

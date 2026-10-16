@@ -1,16 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 
 import java.util.Collections;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
 public class RequestSubmittedNotificationEmailContentProviderTest {
 
     private RequestSubmittedNotificationEmailContentProvider provider;
@@ -21,19 +23,23 @@ public class RequestSubmittedNotificationEmailContentProviderTest {
     @Mock
     private StaffEmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setup() {
         provider = new RequestSubmittedNotificationEmailContentProvider(templateService, emailTemplates);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void givenInputIsNullThenshouldThrowNullPointer() {
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void givenInputMapIsEmptyThenshouldThrowIllegalArgument() {
-        provider.createContent(Collections.emptyMap());
+        assertThrows(IllegalArgumentException.class, () -> {
+            provider.createContent(Collections.emptyMap());
+        });
     }
 
 }

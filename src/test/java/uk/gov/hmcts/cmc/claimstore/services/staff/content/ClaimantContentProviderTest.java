@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class ClaimantContentProviderTest {
@@ -18,19 +19,25 @@ public class ClaimantContentProviderTest {
         new PersonContentProvider()
     );
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullClaimant() {
-        provider.createContent(null, EMAIL);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null, EMAIL);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerForNullEmail() {
-        provider.createContent(claimant, null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(claimant, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowIllegalArgumentForEmptyEmail() {
-        provider.createContent(claimant, "");
+        assertThrows(IllegalArgumentException.class, () -> {
+            provider.createContent(claimant, "");
+        });
     }
 
     @Test

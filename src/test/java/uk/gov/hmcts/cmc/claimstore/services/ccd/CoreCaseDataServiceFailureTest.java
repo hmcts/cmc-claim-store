@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.google.common.collect.Maps;
 import feign.FeignException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -52,12 +52,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -68,7 +70,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CoreCaseDataServiceFailureTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
@@ -104,12 +106,12 @@ public class CoreCaseDataServiceFailureTest {
 
     private CoreCaseDataService service;
 
-    @Before
+    @BeforeEach
     public void before() {
-        when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
+        lenient().when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
+        lenient().when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
-        when(coreCaseDataApi.startEventForCitizen(
+        lenient().when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
             eq(USER_DETAILS.getId()),
@@ -124,7 +126,7 @@ public class CoreCaseDataServiceFailureTest {
                 .token("token")
                 .build());
 
-        when(coreCaseDataApi.submitEventForCitizen(
+        lenient().when(coreCaseDataApi.submitEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
             eq(USER_DETAILS.getId()),
@@ -150,500 +152,548 @@ public class CoreCaseDataServiceFailureTest {
             pilotCourtService);
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void submitPostPaymentFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.createNewCase(USER, providedClaim);
+            service.createNewCase(USER, providedClaim);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void submitInitiatePaymentFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.initiatePaymentForCitizenCase(USER, providedClaim);
+            service.initiatePaymentForCitizenCase(USER, providedClaim);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void linkDefendantFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
-        service.linkDefendant(AUTHORISATION,
-            providedClaim.getId(),
-            providedClaim.getDefendantId(),
-            providedClaim.getDefendantEmail(),
-            CaseEvent.LINK_DEFENDANT);
+            service.linkDefendant(AUTHORISATION,
+                providedClaim.getId(),
+                providedClaim.getDefendantId(),
+                providedClaim.getDefendantEmail(),
+                CaseEvent.LINK_DEFENDANT);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void requestMoreTimeForResponseFailure() {
-        Claim providedClaim = SampleClaim.withNoResponse();
-        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.withNoResponse();
+            Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        service.requestMoreTimeForResponse(AUTHORISATION, providedClaim, FUTURE_DATE);
+            service.requestMoreTimeForResponse(AUTHORISATION, providedClaim, FUTURE_DATE);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveCountyCourtJudgmentFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
-            .builder()
-            .ccjType(CountyCourtJudgmentType.DEFAULT)
-            .build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
+                .builder()
+                .ccjType(CountyCourtJudgmentType.DEFAULT)
+                .build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
-        service.saveCountyCourtJudgment(AUTHORISATION,
-            providedClaim.getId(),
-            providedCCJ);
+            service.saveCountyCourtJudgment(AUTHORISATION,
+                providedClaim.getId(),
+                providedCCJ);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void saveCountyCourtJudgmentFailedWithUnprocessableEntity() {
-        Claim providedClaim = SampleClaim.getDefault();
-        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
-            .builder()
-            .ccjType(CountyCourtJudgmentType.DEFAULT)
-            .build();
+        assertThrows(UnprocessableEntityException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
+                .builder()
+                .ccjType(CountyCourtJudgmentType.DEFAULT)
+                .build();
 
-        when(coreCaseDataApi.submitEventForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(SampleClaim.CLAIM_ID.toString()),
-            anyBoolean(),
-            any()
-        ))
-            .thenThrow(new FeignException.UnprocessableEntity("422 from CCD", request, new byte[]{}, Map.of()));
+            when(coreCaseDataApi.submitEventForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(SampleClaim.CLAIM_ID.toString()),
+                anyBoolean(),
+                any()
+            ))
+                .thenThrow(new FeignException.UnprocessableEntity("422 from CCD", request, new byte[]{}, Map.of()));
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
-        service.saveCountyCourtJudgment(AUTHORISATION,
-            providedClaim.getId(),
-            providedCCJ);
+            service.saveCountyCourtJudgment(AUTHORISATION,
+                providedClaim.getId(),
+                providedCCJ);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void linkSealedClaimDocumentFailure() {
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+            Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
-        URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
-        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            service.saveClaimDocuments(AUTHORISATION,
+                SampleClaim.CLAIM_ID,
+                claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()),
+                ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
 
-        service.saveClaimDocuments(AUTHORISATION,
-            SampleClaim.CLAIM_ID,
-            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()),
-            ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveDefendantResponseWithFullDefenceFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        Response providedResponse = SampleResponse.validDefaults();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            Response providedResponse = SampleResponse.validDefaults();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
-        service.saveDefendantResponse(providedClaim.getId(),
-            "defendant@email.com",
-            providedResponse,
-            AUTHORISATION
-        );
+            service.saveDefendantResponse(providedClaim.getId(),
+                "defendant@email.com",
+                providedResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveDefendantResponseWithFullAdmissionFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        Response providedResponse = SampleResponse.FullAdmission.builder().build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            Response providedResponse = SampleResponse.FullAdmission.builder().build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
-        service.saveDefendantResponse(providedClaim.getId(),
-            "defendant@email.com",
-            providedResponse,
-            AUTHORISATION
-        );
+            service.saveDefendantResponse(providedClaim.getId(),
+                "defendant@email.com",
+                providedResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveDefendantResponseWithPartAdmissionFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
-        Response providedResponse = SampleResponse.PartAdmission.builder().build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
+            Response providedResponse = SampleResponse.PartAdmission.builder().build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
-        service.saveDefendantResponse(providedClaim.getId(),
-            "defendant@email.com",
-            providedResponse,
-            AUTHORISATION
-        );
+            service.saveDefendantResponse(providedClaim.getId(),
+                "defendant@email.com",
+                providedResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveClaimantAcceptationResponseFailure() {
-        Response providedResponse = SampleResponse.validDefaults();
-        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
-        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Response providedResponse = SampleResponse.validDefaults();
+            Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+            ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithClaimantResponse());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithClaimantResponse());
 
-        service.saveClaimantResponse(providedClaim.getId(),
-            claimantResponse,
-            AUTHORISATION
-        );
+            service.saveClaimantResponse(providedClaim.getId(),
+                claimantResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveClaimantAcceptationWithCCJResponseFailure() {
-        Response providedResponse = SampleResponse.validDefaults();
-        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Response providedResponse = SampleResponse.validDefaults();
+            Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+            ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
+                .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithClaimantResponse());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithClaimantResponse());
 
-        service.saveClaimantResponse(providedClaim.getId(),
-            claimantResponse,
-            AUTHORISATION
-        );
+            service.saveClaimantResponse(providedClaim.getId(),
+                claimantResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveClaimantAcceptationWithSettlementResponseFailure() {
-        Response providedResponse = SampleResponse.validDefaults();
-        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Response providedResponse = SampleResponse.validDefaults();
+            Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+            ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
+                .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithClaimantResponse());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithClaimantResponse());
 
-        service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
+            service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveClaimantRejectionResponseFailure() {
-        Response providedResponse = SampleResponse.validDefaults();
-        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
-        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Response providedResponse = SampleResponse.validDefaults();
+            Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+            ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithClaimantResponse());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithClaimantResponse());
 
-        service.saveClaimantResponse(providedClaim.getId(),
-            claimantResponse,
-            AUTHORISATION
-        );
+            service.saveClaimantResponse(providedClaim.getId(),
+                claimantResponse,
+                AUTHORISATION
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveSettlementFailure() {
-        Settlement providedSettlement = SampleSettlement.validDefaults();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Settlement providedSettlement = SampleSettlement.validDefaults();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithSettlement(providedSettlement));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithSettlement(providedSettlement));
 
-        service.saveSettlement(
-            SampleClaim.CLAIM_ID,
-            providedSettlement,
-            AUTHORISATION,
-            CaseEvent.SETTLED_PRE_JUDGMENT
-        );
+            service.saveSettlement(
+                SampleClaim.CLAIM_ID,
+                providedSettlement,
+                AUTHORISATION,
+                CaseEvent.SETTLED_PRE_JUDGMENT
+            );
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void reachSettlementAgreementFailure() {
-        Settlement providedSettlement = SampleSettlement.validDefaults();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Settlement providedSettlement = SampleSettlement.validDefaults();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(SampleClaim.withSettlementReached());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(SampleClaim.withSettlementReached());
 
-        service.reachSettlementAgreement(
-            SampleClaim.CLAIM_ID,
-            providedSettlement,
-            nowInUTC(),
-            AUTHORISATION,
-            CaseEvent.SETTLED_PRE_JUDGMENT);
+            service.reachSettlementAgreement(
+                SampleClaim.CLAIM_ID,
+                providedSettlement,
+                nowInUTC(),
+                AUTHORISATION,
+                CaseEvent.SETTLED_PRE_JUDGMENT);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void updateResponseDeadlineFailure() {
-        Claim providedClaim = SampleClaim.getDefault();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim providedClaim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponseDeadline(FUTURE_DATE));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithResponseDeadline(FUTURE_DATE));
 
-        service.updateResponseDeadline(AUTHORISATION, providedClaim.getId(), FUTURE_DATE);
+            service.updateResponseDeadline(AUTHORISATION, providedClaim.getId(), FUTURE_DATE);
 
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
+            verify(coreCaseDataApi).submitForCitizen(
+                eq(AUTHORISATION),
+                eq(AUTH_TOKEN),
+                eq(USER_DETAILS.getId()),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(true),
+                any(CaseDataContent.class)
+            );
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveDirectionsQuestionnaireDeadlineFailure() {
-        Response providedResponse = SampleResponse.validDefaults();
-        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Response providedResponse = SampleResponse.validDefaults();
+            Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
-        service.saveDirectionsQuestionnaireDeadline(providedClaim.getId(), FUTURE_DATE, AUTHORISATION);
+            service.saveDirectionsQuestionnaireDeadline(providedClaim.getId(), FUTURE_DATE, AUTHORISATION);
 
-        verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
-            anyString(), anyString(), eq(DIRECTIONS_QUESTIONNAIRE_DEADLINE.getValue()));
+            verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+                anyString(), anyString(), eq(DIRECTIONS_QUESTIONNAIRE_DEADLINE.getValue()));
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void updateShouldReturnCaseDetails() {
-        CCDCase providedCCDCase = CCDCase.builder().id(SampleClaim.CLAIM_ID).build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            CCDCase providedCCDCase = CCDCase.builder().id(SampleClaim.CLAIM_ID).build();
 
-        CaseDetails caseDetails = service.update(AUTHORISATION, providedCCDCase, CaseEvent.FULL_ADMISSION);
+            CaseDetails caseDetails = service.update(AUTHORISATION, providedCCDCase, CaseEvent.FULL_ADMISSION);
 
-        assertNotNull(caseDetails);
+            assertNotNull(caseDetails);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveCaseEventFailure() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder().buildAcceptationReferToJudgeWithCourtDetermination();
-        Claim claim = SampleClaim.getWithClaimantResponse(claimantResponse);
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
+                .builder().buildAcceptationReferToJudgeWithCourtDetermination();
+            Claim claim = SampleClaim.getWithClaimantResponse(claimantResponse);
 
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
 
-        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
+            service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void saveReDeterminationFailure() {
-        ReDetermination reDetermination = ReDetermination.builder()
-            .explanation("Want my money sooner")
-            .partyType(MadeBy.CLAIMANT)
-            .build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            ReDetermination reDetermination = ReDetermination.builder()
+                .explanation("Want my money sooner")
+                .partyType(MadeBy.CLAIMANT)
+                .build();
 
-        Claim claim = SampleClaim.getDefault();
+            Claim claim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(SampleClaim.builder().build());
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(SampleClaim.builder().build());
 
-        service.saveReDetermination(AUTHORISATION, claim.getId(), reDetermination, REFER_TO_JUDGE_BY_CLAIMANT);
+            service.saveReDetermination(AUTHORISATION, claim.getId(), reDetermination, REFER_TO_JUDGE_BY_CLAIMANT);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void savePaidInFullSubmitEventFailure() {
-        Claim claim = SampleClaim.getDefault();
-        PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim claim = SampleClaim.getDefault();
+            PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
-        service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
+            service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void linkLetterHolderEventFailure() {
-        Claim claim = SampleClaim.getDefault();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim claim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        String newLetterHolderId = "letter_holder_id";
-        service.linkLetterHolder(claim.getId(), newLetterHolderId);
+            String newLetterHolderId = "letter_holder_id";
+            service.linkLetterHolder(claim.getId(), newLetterHolderId);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void updateClaimSubmissionOperationIndicator() {
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
+            Claim claim = SampleClaim.getDefault();
 
-        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
-        Claim claim = SampleClaim.getDefault();
-
-        service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
-            PIN_GENERATION_OPERATIONS);
+            service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
+                PIN_GENERATION_OPERATIONS);
+        });
     }
 
-    @Test(expected = CoreCaseDataStoreException.class)
+    @Test
     public void addBulkPrintClaimToClaimEventFailure() {
-        Claim claim = SampleClaim.getDefault();
+        assertThrows(CoreCaseDataStoreException.class, () -> {
+            Claim claim = SampleClaim.getDefault();
 
-        service.addBulkPrintDetailsToClaim(
-            AUTHORISATION,
-            List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
-            CaseEvent.ADD_BULK_PRINT_DETAILS,
-            claim.getId());
+            service.addBulkPrintDetailsToClaim(
+                AUTHORISATION,
+                List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
+                CaseEvent.ADD_BULK_PRINT_DETAILS,
+                claim.getId());
+        });
     }
 
 }

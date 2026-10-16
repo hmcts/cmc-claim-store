@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -66,7 +66,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     private static final CCDDocument DOCUMENT = CCDDocument

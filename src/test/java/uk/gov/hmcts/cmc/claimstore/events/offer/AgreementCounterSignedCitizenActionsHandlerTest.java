@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events.offer;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -25,7 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AgreementCounterSignedCitizenActionsHandlerTest {
     private static final String FRONTEND_URL = "domain";
     private static final String ORIGINATOR_TEMPLATE_ID = "originator template id";
@@ -53,13 +54,13 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, String>> paramsCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getOfferCounterSignedEmailToOriginator()).thenReturn(ORIGINATOR_TEMPLATE_ID);
-        when(emailTemplates.getOfferCounterSignedEmailToOtherParty()).thenReturn(OTHER_PARTY_TEMPLATE_ID);
+        lenient().when(emailTemplates.getOfferCounterSignedEmailToOriginator()).thenReturn(ORIGINATOR_TEMPLATE_ID);
+        lenient().when(emailTemplates.getOfferCounterSignedEmailToOtherParty()).thenReturn(OTHER_PARTY_TEMPLATE_ID);
 
         handler = new AgreementCounterSignedCitizenActionsHandler(notificationService, notificationsProperties);
     }

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.jobs.cron;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotifyClaimantDefaultCCJJobTest {
 
     @Mock
@@ -39,7 +39,7 @@ public class NotifyClaimantDefaultCCJJobTest {
 
     private static final User USER = new User(AUTHORISATION, SampleUserDetails.builder().build());
 
-    @Before
+    @BeforeEach
     public void setup() {
         notifyClaimantDefaultCCJJob = new NotifyClaimantDefaultCCJJob();
         notifyClaimantDefaultCCJJob.setCaseSearchApi(caseSearchApi);

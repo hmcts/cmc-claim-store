@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.breathingspace;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEmailService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BreathingSpaceEmailServiceTest {
 
     public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
@@ -30,7 +30,7 @@ public class BreathingSpaceEmailServiceTest {
     @Mock
     private NotificationService notificationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         breathingSpaceEmailService = new BreathingSpaceEmailService(notificationService);
     }

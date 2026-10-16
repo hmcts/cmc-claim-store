@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.Collections;
 
 import static java.time.LocalDate.now;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

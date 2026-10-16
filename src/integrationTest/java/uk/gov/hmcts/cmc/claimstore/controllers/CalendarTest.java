@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 
 public class CalendarTest extends BaseMockSpringTest {
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Test

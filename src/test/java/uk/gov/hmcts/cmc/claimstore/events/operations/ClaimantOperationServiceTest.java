@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.operations;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimantOperationServiceTest {
 
     public static final String CLAIMANT_EMAIL_TEMPLATE = "Claimant Email Template";
@@ -62,7 +62,7 @@ public class ClaimantOperationServiceTest {
     @Mock
     private AppInsights appInsights;
 
-    @Before
+    @BeforeEach
     public void before() {
         claimantOperationService = new ClaimantOperationService(claimIssuedNotificationService,
             notificationProperties, eventsStatusService, hwfClaimNotificationService);

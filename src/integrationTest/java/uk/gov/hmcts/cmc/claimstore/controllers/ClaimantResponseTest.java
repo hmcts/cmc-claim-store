@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -46,13 +46,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 public class ClaimantResponseTest extends BaseMockSpringTest {
     private static final String RESPONSE_URL = "/responses/{externalId}/claimant/{claimantId}";
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected ClaimService claimService;
 
-    @MockBean
+    @MockitoBean
     protected CaseRepository caseRepository;
 
     @BeforeEach

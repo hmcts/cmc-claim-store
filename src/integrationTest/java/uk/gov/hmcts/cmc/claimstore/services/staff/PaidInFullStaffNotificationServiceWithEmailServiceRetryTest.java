@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,21 +28,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 //As no more java mail sender in place and sendgrid covers this.
-@Ignore
+@Disabled
 public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
-    @MockBean
+    @MockitoBean
     private JavaMailSenderImpl javaMailSender;
 
-    @MockBean
+    @MockitoBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     @Autowired
     private PaidInFullStaffNotificationService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_CONTENT);
     }

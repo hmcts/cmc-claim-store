@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefendantResponseCitizenNotificationsHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -31,7 +32,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         defendantResponseCitizenNotificationsHandler
             = new DefendantResponseCitizenNotificationsHandler(defendantResponseNotificationService);
@@ -60,19 +61,20 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
         );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwExceptionWhenResponseNotPresent() {
-
-        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT_WITHOUT_RESPONSE);
-
+        assertThrows(IllegalArgumentException.class, () -> {
+            defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT_WITHOUT_RESPONSE);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void throwExceptionResponseEventIsGeneratedWithNullClaim() {
+        assertThrows(NullPointerException.class, () -> {
+            DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null, AUTHORISATION);
 
-        DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null, AUTHORISATION);
-
-        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
+            defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
+        });
     }
 
     public void notifyDefendantPaperResponseSendsNotificationsToClaimant() {
@@ -89,23 +91,24 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
         );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwExceptionWhenResponseNotPresentDefendantPaperResponse() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            DefendantPaperResponseEvent responseEventWithoutResponse = new DefendantPaperResponseEvent(
+                SampleClaimIssuedEvent.CLAIM_NO_RESPONSE,
+                AUTHORISATION
+            );
 
-        DefendantPaperResponseEvent responseEventWithoutResponse = new DefendantPaperResponseEvent(
-            SampleClaimIssuedEvent.CLAIM_NO_RESPONSE,
-            AUTHORISATION
-        );
-
-        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithoutResponse);
-
+            defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithoutResponse);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void throwExceptionResponseEventIsGeneratedWithNullClaimDefendantPaperResponse() {
+        assertThrows(NullPointerException.class, () -> {
+            DefendantPaperResponseEvent responseEventWithNullClaim = new DefendantPaperResponseEvent(null, AUTHORISATION);
 
-        DefendantPaperResponseEvent responseEventWithNullClaim = new DefendantPaperResponseEvent(null, AUTHORISATION);
-
-        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
+            defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
+        });
     }
 }

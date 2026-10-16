@@ -25,7 +25,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
 @ContextConfiguration(classes = CCDMapperConfig.class)
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class CaseDetailsConverterTest {
 
     private CaseDetailsConverter caseDetailsConverter;

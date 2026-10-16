@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccj;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getDefault;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CCJStaffNotificationHandlerTest {
 
     private static final CountyCourtJudgmentEvent EVENT = new CountyCourtJudgmentEvent(
@@ -31,7 +31,7 @@ public class CCJStaffNotificationHandlerTest {
     @Mock
     InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         handler = new CCJStaffNotificationHandler(
             ccjStaffNotificationService,

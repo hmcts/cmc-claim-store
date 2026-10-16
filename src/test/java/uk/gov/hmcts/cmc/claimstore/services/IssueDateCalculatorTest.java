@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +32,7 @@ public class IssueDateCalculatorTest {
     private IssueDateCalculator calculator;
     private WorkingDayIndicator workingDayIndicator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         workingDayIndicator = mock(WorkingDayIndicator.class);
         calculator = new IssueDateCalculator(workingDayIndicator, CLOSE_OFFICE_HOUR);
