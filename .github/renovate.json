@@ -7,12 +7,16 @@
   "labels": [
     "dependencies"
   ],
-"automergeSchedule": [
-  "after 7am and before 8am every weekday",
-  "after 6pm and before 8pm every weekday"
-],
-"platformAutomerge": false,
-  "schedule": ["after 8am and before 11am every weekday"],
+  "timezone": "Europe/London",
+  "automergeSchedule": [
+    "after 7am and before 8am every weekday",
+    "after 6pm and before 8pm every weekday"
+  ],
+  "platformAutomerge": false,
+  "schedule": [
+    "after 7am and before 8am every weekday",
+    "after 6pm and before 8pm every weekday"
+  ],
   "rebaseWhen": "behind-base-branch",
   "automergeStrategy": "squash",
   "prConcurrentLimit": 5,
@@ -31,7 +35,9 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["pact"],
+      "matchPackagePatterns": [
+        "pact"
+      ],
       "enabled": false
     },
     {
@@ -43,21 +49,29 @@
         "jakarta.persistence",
         "org.hibernate"
       ],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "Spring Boot and related updates",
       "groupSlug": "spring-boot-related",
       "automerge": true,
       "automergeType": "pr"
     },
     {
-      "matchManagers": ["terraform"],
+      "matchManagers": [
+        "terraform"
+      ],
       "groupName": "Terraform updates",
       "groupSlug": "terraform",
       "automerge": true,
       "automergeType": "pr"
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "All non-major updates",
       "groupSlug": "all-non-major",
       "automerge": true,

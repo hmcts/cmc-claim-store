@@ -257,7 +257,7 @@ dependencies {
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
 
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.2.1-RELEASE'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.9'
@@ -287,7 +287,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-config'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.10'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
@@ -350,7 +350,7 @@ dependencies {
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-  contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+  contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.7'
 
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
