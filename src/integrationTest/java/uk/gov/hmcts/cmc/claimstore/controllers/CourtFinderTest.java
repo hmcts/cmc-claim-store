@@ -7,7 +7,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 import uk.gov.hmcts.cmc.email.EmailService;
 
@@ -28,7 +27,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
 
     @Test
     public void shouldFindPostcodeThatExists() throws Exception {
-        String postcode = "SW1H9AJ";
+        String postcode = "SW1H 9AJ";
         String courtName = "Newcastle Civil & Family Courts and Tribunals Centre";
 
         given(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
@@ -60,7 +59,34 @@ public class CourtFinderTest extends BaseMockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        CourtDetails courtDetails = jsonMappingHelper.deserializeObjectFrom(result, CourtDetails.class);
+        Court courtDetails = jsonMappingHelper.deserializeObjectFrom(result, Court.class);
         assertThat(courtDetails.getName()).isEqualTo(courtName);
+        assertThat(courtDetails.getAddresses()).hasSize(1);
+        assertThat(courtDetails.getAddresses().get(0).getPostcode()).isEqualTo("NE1 8QF");
+        assertThat(courtDetails.getAddresses().get(0).getAddressLines()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFindCourtByExactName() throws Exception {
+        String courtName = "Newcastle Civil & Family Courts and Tribunals Centre";
+        String courtSlug = "newcastle-civil-family-courts-and-tribunals-centre";
+
+        given(courtFinderApi.findMoneyClaimCourtByName(courtName))
+            .willReturn(DataFactory.createSearchCourtByNameResponseFromJson(
+                "factapi/courtfinder/search/response/name/SEARCH_BY_NAME_NEWCASTLE.json"));
+        given(courtFinderApi.getCourtDetailsFromNameSlug(courtSlug))
+            .willReturn(DataFactory.createSearchCourtBySlugResponseFromJson(
+                "factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json"));
+
+        MvcResult result = doGet("/court-finder/search-name/{name}", courtName)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        List<Court> courts = jsonMappingHelper.fromJson(
+            result.getResponse().getContentAsString(), new TypeReference<List<Court>>() { });
+
+        assertThat(courts).hasSize(1);
+        assertThat(courts.get(0).getName()).isEqualTo(courtName);
+        assertThat(courts.get(0).getAddresses().get(0).getPostcode()).isEqualTo("NE1 8QF");
     }
 }

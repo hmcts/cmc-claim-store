@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -14,12 +15,13 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchCourtByNameResponse {
 
-    private Boolean displayed;
+    private UUID id;
+
+    private Boolean open;
 
     private String name;
 
     private String slug;
 
-    @JsonProperty("updated_at")
-    private String updatedAt;
+    private String lastUpdatedAt;
 }
