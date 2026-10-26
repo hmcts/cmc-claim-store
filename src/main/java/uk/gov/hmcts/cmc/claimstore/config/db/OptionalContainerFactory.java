@@ -6,7 +6,7 @@ import org.skife.jdbi.v2.tweak.ContainerFactory;
 import java.util.Optional;
 
 /**
- * Courtesy of Dropwizard: https://github.com/dropwizard/dropwizard/blob/master/dropwizard-jdbi/src/main/java/io/dropwizard/jdbi/OptionalContainerFactory.java
+ * Courtesy of Dropwizard: https://github.com/dropwizard/dropwizard/blob/master/dropwizard-jdbi/src/main/java/io/dropwizard/jdbi/OptionalContainerFactory.java.
  */
 public class OptionalContainerFactory implements ContainerFactory<Optional<?>> {
 

@@ -9,7 +9,6 @@ public enum ScannedDocumentSubtype {
     N9B("N9b"),
     N11("N11");
 
-
     public final String value;
 
     ScannedDocumentSubtype(String value) {
