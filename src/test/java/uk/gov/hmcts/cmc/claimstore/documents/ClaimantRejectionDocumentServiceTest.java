@@ -47,9 +47,12 @@ public class ClaimantRejectionDocumentServiceTest {
     public void setUp() {
         defendantOconN9xClaimantMediation = "XYZ";
 
-        claimantRejectionDefendantDocumentService
-            = new ClaimantRejectionDefendantDocumentService(
-            defendantOconN9xClaimantMediation, CASE_TYPE_ID, JURISDICTION_ID, docAssemblyService, caseMapper, addressMapper);
+        claimantRejectionDefendantDocumentService = new ClaimantRejectionDefendantDocumentService(defendantOconN9xClaimantMediation,
+            CASE_TYPE_ID,
+            JURISDICTION_ID,
+            docAssemblyService,
+            caseMapper,
+            addressMapper);
     }
 
     @Test
