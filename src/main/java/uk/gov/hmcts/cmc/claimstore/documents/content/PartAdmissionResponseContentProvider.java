@@ -57,11 +57,6 @@ public class PartAdmissionResponseContentProvider {
                 content.put("paymentMethod", paymentDeclaration.getExplanation());
             });
 
-        List<TimelineEvent> events = null;
-        List<EvidenceContent> evidences = null;
-        String timelineComment = null;
-        String evidenceComment = null;
-
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
         List<TimelineEvent> events = null;
         String timelineComment = null;
