@@ -63,6 +63,8 @@ public class PartAdmissionResponseContentProvider {
         String evidenceComment = null;
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
+        List<TimelineEvent> events = null;
+        String timelineComment = null;
         if (defenceTimeline.isPresent()) {
             DefendantTimeline defendantTimeline = defenceTimeline.get();
             events = defendantTimeline.getEvents();
@@ -70,6 +72,8 @@ public class PartAdmissionResponseContentProvider {
         }
 
         Optional<DefendantEvidence> defenceEvidence = partAdmissionResponse.getEvidence();
+        List<EvidenceContent> evidences = null;
+        String evidenceComment = null;
         if (defenceEvidence.isPresent()) {
             DefendantEvidence defendantEvidence = defenceEvidence.get();
             evidences = Optional.ofNullable(defendantEvidence.getRows())
