@@ -26,16 +26,16 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2025.1.4'
+def springCloudVersion = '2025.0.3'
 
 def versions = [
   springBoot        : springBootVersion,
   restAssuredVersion: '6.3.0',
   pact_version    : '4.6.17',
-  serviceAuthVersion : '5.3.5',
-  idamJavaClient : '4.1.0-CCD-8220',
-  elasticSearch     : '7.17.29',
-  lombok            : '1.18.48'
+  serviceAuthVersion : '5.3.3',
+  idamJavaClient : '4.0.0',
+  elasticSearch     : '7.17.20',
+  lombok            : '1.18.34'
 ]
 
 static def getCheckedOutGitCommitHash() {
@@ -272,7 +272,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.4.0'
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.60.1'
   implementation group: 'com.github.hmcts', name: 'doc-assembly-client', version: '2.2.3'
-  implementation('com.github.hmcts:payments-java-client:1.7.0') {
+  implementation('com.github.hmcts:payments-java-client:1.6.8') {
     exclude group: 'uk.gov.hmcts.reform', module: 'service-auth-provider-client'
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging'
   }
@@ -299,8 +299,8 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.17'
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.17'
+  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.9'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.9.3'
 
 
 
