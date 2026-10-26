@@ -45,11 +45,6 @@ public class PartAdmissionResponseContentProvider {
 
         Map<String, Object> content = new HashMap<>();
 
-        List<TimelineEvent> events = null;
-        List<EvidenceContent> evidences = null;
-        String timelineComment = null;
-        String evidenceComment = null;
-
         content.put("responseDefence", split(partAdmissionResponse.getDefence()));
         content.put("responseTypeSelected", deriveResponseTypeSelected(partAdmissionResponse));
 
@@ -63,6 +58,8 @@ public class PartAdmissionResponseContentProvider {
             });
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
+        List<TimelineEvent> events = null;
+        String timelineComment = null;
         if (defenceTimeline.isPresent()) {
             DefendantTimeline defendantTimeline = defenceTimeline.get();
             events = defendantTimeline.getEvents();
@@ -70,6 +67,8 @@ public class PartAdmissionResponseContentProvider {
         }
 
         Optional<DefendantEvidence> defenceEvidence = partAdmissionResponse.getEvidence();
+        List<EvidenceContent> evidences = null;
+        String evidenceComment = null;
         if (defenceEvidence.isPresent()) {
             DefendantEvidence defendantEvidence = defenceEvidence.get();
             evidences = Optional.ofNullable(defendantEvidence.getRows())
