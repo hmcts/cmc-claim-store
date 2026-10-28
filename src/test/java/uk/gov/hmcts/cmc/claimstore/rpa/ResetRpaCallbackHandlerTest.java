@@ -55,7 +55,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 public class ResetRpaCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String EXTERNAL_ID = "external id";

@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -59,11 +59,11 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final String NEXT_URL = "http://nexturl.test";
     private static final long CASE_ID = 42L;
 
-    @MockBean
+    @MockitoBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @MockBean
+    @MockitoBean
     private IssueDateCalculator issueDateCalculator;
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

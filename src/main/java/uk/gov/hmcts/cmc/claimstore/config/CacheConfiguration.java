@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;

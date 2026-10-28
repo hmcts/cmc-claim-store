@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
-import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
 import java.util.List;
@@ -24,9 +22,6 @@ public class FeatureTogglesTest extends BaseTest {
     public void before() {
         user = idamTestService.createCitizen();
     }
-
-    @Rule
-    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
     @AfterEach
     public void after() {

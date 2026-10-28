@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
-import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -68,11 +68,11 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     private Payment.PaymentBuilder paymentBuilder;
     private Payment payment;
 
-    @MockBean
+    @MockitoBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @MockBean
+    @MockitoBean
     private IssueDateCalculator issueDateCalculator;
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach
@@ -170,7 +170,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
             .build();
 
         return webClient.perform(post("/cases/callbacks/" + callbackType)
-            .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             .content(jsonMappingHelper.toJson(callbackRequest))
         );
@@ -191,7 +191,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
             .build();
 
         return webClient.perform(post("/cases/callbacks/" + callbackType)
-            .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             .content(jsonMappingHelper.toJson(callbackRequest))
         );

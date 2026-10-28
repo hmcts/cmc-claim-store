@@ -1,21 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StateTransitionCalculatorTest {
 
     private StateTransitionCalculator stateTransitionCalculator;
@@ -25,7 +25,7 @@ public class StateTransitionCalculatorTest {
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         stateTransitionCalculator = new StateTransitionCalculator(workingDayIndicator, numberOfDays);
     }

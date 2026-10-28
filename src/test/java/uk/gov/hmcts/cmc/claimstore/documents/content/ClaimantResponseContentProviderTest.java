@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import com.launchdarkly.sdk.LDUser;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
@@ -34,12 +34,13 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimantResponseContentProviderTest {
 
     private PaymentIntentionContentProvider paymentIntentionContentProvider = new PaymentIntentionContentProvider();
@@ -58,7 +59,7 @@ public class ClaimantResponseContentProviderTest {
     @Mock
     private LaunchDarklyClient launchDarklyClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         contentProvider = new ClaimantResponseContentProvider(
             partyDetailsContentProvider,
@@ -67,7 +68,7 @@ public class ClaimantResponseContentProviderTest {
             responseAcceptationContentProvider,
             responseRejectionContentProvider,
             launchDarklyClient);
-        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+        lenient().when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
             .thenReturn(true);
     }
 

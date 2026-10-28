@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -49,10 +49,10 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         .withAuthorisation(BEARER_TOKEN)
         .build();
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected CaseRepository caseRepository;
 
     @BeforeEach

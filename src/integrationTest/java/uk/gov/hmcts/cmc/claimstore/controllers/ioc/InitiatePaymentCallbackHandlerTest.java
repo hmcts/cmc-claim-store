@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -54,11 +54,11 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
-    @MockBean
+    @MockitoBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @MockBean
+    @MockitoBean
     private IssueDateCalculator issueDateCalculator;
 
     private Payment payment;

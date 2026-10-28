@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.jobs.cron;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssueService;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimIssueJobTest {
 
     @InjectMocks

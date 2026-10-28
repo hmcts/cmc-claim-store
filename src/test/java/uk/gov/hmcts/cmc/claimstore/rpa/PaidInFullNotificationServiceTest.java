@@ -17,15 +17,16 @@ import uk.gov.hmcts.cmc.rpa.mapper.PaidInFullJsonMapper;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 public class PaidInFullNotificationServiceTest {
     private static final String PAID_IN_FULL_EMAIL_ADDRESS = "test@example.com";
     private static final String SENDER_EMAIL = "sender@example.com";

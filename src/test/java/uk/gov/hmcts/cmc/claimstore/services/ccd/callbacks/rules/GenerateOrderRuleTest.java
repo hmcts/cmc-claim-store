@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules;
 
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;

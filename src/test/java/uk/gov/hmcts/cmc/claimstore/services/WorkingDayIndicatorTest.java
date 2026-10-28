@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
@@ -14,13 +14,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class WorkingDayIndicatorTest {
 
     private static final LocalDate BANK_HOLIDAY = toDate("2017-05-29");
@@ -44,7 +44,7 @@ public class WorkingDayIndicatorTest {
     @Mock
     private NonWorkingDaysCollection nonWorkingDaysCollection;
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new WorkingDayIndicator(publicHolidaysApiClient, nonWorkingDaysCollection);
     }

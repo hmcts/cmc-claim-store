@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -16,12 +16,13 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AmountContentProviderTest {
 
     private AmountContentProvider amountContentProvider;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         amountContentProvider = new AmountContentProvider(
             new InterestContentProvider(
@@ -102,10 +103,12 @@ public class AmountContentProviderTest {
             .isEqualTo("£71.90");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void throwExceptionWhenCountyCourtJudgementIsMissing() {
-        Claim claim = SampleClaim.getWithDefaultResponse();
-        amountContentProvider.create(claim);
+        assertThrows(NullPointerException.class, () -> {
+            Claim claim = SampleClaim.getWithDefaultResponse();
+            amountContentProvider.create(claim);
+        });
     }
 
 }

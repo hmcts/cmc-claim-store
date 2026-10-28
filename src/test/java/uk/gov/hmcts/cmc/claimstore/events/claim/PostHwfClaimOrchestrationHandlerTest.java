@@ -1,15 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.pdf.PDFServiceClient;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PostHwfClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final Claim UPDATEDCLAIM = SampleClaim.getDefaultWithClaimStateAsCreate();
@@ -76,7 +76,7 @@ public class PostHwfClaimOrchestrationHandlerTest {
     @Mock
     private PrintableDocumentService printableDocumentService;
 
-    @Before
+    @BeforeEach
     public void before() {
         DocumentOrchestrationService documentOrchestrationService = new DocumentOrchestrationService(
             citizenServiceDocumentsService,

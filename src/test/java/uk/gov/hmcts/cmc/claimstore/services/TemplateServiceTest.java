@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.exceptions.TemplateException;
 
@@ -11,6 +11,7 @@ import java.util.Map;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateServiceTest {
 
@@ -28,33 +29,41 @@ public class TemplateServiceTest {
         assertThat(processed).isEqualTo("Hello, World!");
     }
 
-    @Test(expected = TemplateException.class)
+    @Test
     public void shouldThrowTemplateExceptionOnEmptyObject() {
-        service = new TemplateService(pebble);
-        Map<String, Object> variables = new HashMap<>();
+        assertThrows(TemplateException.class, () -> {
+            service = new TemplateService(pebble);
+            Map<String, Object> variables = new HashMap<>();
 
-        service.evaluate("{{ person }}", variables);
+            service.evaluate("{{ person }}", variables);
+        });
     }
 
-    @Test(expected = TemplateException.class)
+    @Test
     public void shouldThrowTemplateExceptionWhenPebbleExceptionIsThrown() {
-        service = new TemplateService(pebble);
+        assertThrows(TemplateException.class, () -> {
+            service = new TemplateService(pebble);
 
-        service.evaluate("block {{", emptyMap());
+            service.evaluate("block {{", emptyMap());
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullTemplateToMapEvaluate() {
-        service = new TemplateService(pebble);
+        assertThrows(NullPointerException.class, () -> {
+            service = new TemplateService(pebble);
 
-        service.evaluate(null, emptyMap());
+            service.evaluate(null, emptyMap());
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullValuesToMapEvaluate() {
-        service = new TemplateService(pebble);
+        assertThrows(NullPointerException.class, () -> {
+            service = new TemplateService(pebble);
 
-        service.evaluate("content doesn't matter", null);
+            service.evaluate("content doesn't matter", null);
+        });
     }
 
 }

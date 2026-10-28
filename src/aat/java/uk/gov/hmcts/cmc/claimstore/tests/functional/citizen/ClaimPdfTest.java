@@ -1,11 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
-import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -22,9 +20,6 @@ public class ClaimPdfTest extends BasePdfTest {
     public void before() {
         user = bootstrap.getClaimant();
     }
-
-    @Rule
-    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
     @Test
     @Retry

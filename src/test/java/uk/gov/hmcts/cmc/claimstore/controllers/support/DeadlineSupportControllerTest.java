@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants;
@@ -28,15 +28,17 @@ import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeadlineSupportControllerTest {
     private static final LocalDateTime PRE_5_0_0_DATETIME = DateUtils.DATE_OF_5_0_0_RELEASE.minus(1, YEARS);
 
@@ -51,39 +53,49 @@ public class DeadlineSupportControllerTest {
 
     private DeadlineSupportController controller;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         controller = new DeadlineSupportController(userService,
             claimService,
             directionsQuestionnaireDeadlineCalculator,
             caseRepository
         );
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(new User("authorisation", null));
+        lenient().when(userService.authenticateAnonymousCaseWorker()).thenReturn(new User("authorisation", null));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullUserService() {
-        new DeadlineSupportController(null, claimService, directionsQuestionnaireDeadlineCalculator, caseRepository);
+        assertThrows(NullPointerException.class, () -> {
+            new DeadlineSupportController(null, claimService, directionsQuestionnaireDeadlineCalculator, caseRepository);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullClaimService() {
-        new DeadlineSupportController(userService, null, directionsQuestionnaireDeadlineCalculator, caseRepository);
+        assertThrows(NullPointerException.class, () -> {
+            new DeadlineSupportController(userService, null, directionsQuestionnaireDeadlineCalculator, caseRepository);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullDQCalculator() {
-        new DeadlineSupportController(userService, claimService, null, caseRepository);
+        assertThrows(NullPointerException.class, () -> {
+            new DeadlineSupportController(userService, claimService, null, caseRepository);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullCaseRepository() {
-        new DeadlineSupportController(userService, claimService, directionsQuestionnaireDeadlineCalculator, null);
+        assertThrows(NullPointerException.class, () -> {
+            new DeadlineSupportController(userService, claimService, directionsQuestionnaireDeadlineCalculator, null);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testDefineDeadlineOnMissingClaim() {
-        controller.defineDeadline("dq", "000MC001", false);
+        assertThrows(NotFoundException.class, () -> {
+            controller.defineDeadline("dq", "000MC001", false);
+        });
     }
 
     @Test

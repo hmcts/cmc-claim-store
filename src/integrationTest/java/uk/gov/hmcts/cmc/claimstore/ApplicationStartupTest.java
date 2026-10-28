@@ -5,12 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
@@ -27,25 +26,27 @@ import javax.sql.DataSource;
 @TestPropertySource("/environment.properties")
 class ApplicationStartupTest {
 
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockitoBean(name = "dataSource", answers = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
-    @MockBean(name = "transactionAwareDataSourceProxy")
+    @MockitoBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
-    @MockBean(name = "transactionManager")
+    @MockitoBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
-    @MockBean
+    @MockitoBean
     private TestingSupportRepository testingSupportRepository;
-    @MockBean
+    @MockitoBean
     private Flyway flyway;
-    @MockBean
+    @MockitoBean
     private JobService jobService;
-    @MockBean
+    @MockitoBean
     private SpringBeanJobFactory springBeanJobFactory;
-    @MockBean
-    private SchedulerFactoryBean schedulerFactoryBean;
-    @MockBean
+    // Overrides the Scheduler that QuartzConfiguration's SchedulerFactoryBean creates, so Quartz never starts.
+    // Spring Framework 7 can't override a FactoryBean itself, only the object it produces.
+    @MockitoBean(name = "schedulerFactoryBean")
+    private Scheduler schedulerFactoryBeanScheduler;
+    @MockitoBean
     private Scheduler scheduler;
-    @MockBean
+    @MockitoBean
     private JwtDecoder jwtDecoder;
 
     @Test

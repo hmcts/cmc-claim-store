@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
@@ -19,11 +19,12 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefendantPinLetterContentProviderTest {
 
     private static final String DEFENDANT_PIN = "dsf4dd2";
@@ -41,7 +42,7 @@ public class DefendantPinLetterContentProviderTest {
 
     private DefendantPinLetterContentProvider provider;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         claim = SampleClaim.getDefault();
         provider = new DefendantPinLetterContentProvider(
@@ -52,29 +53,37 @@ public class DefendantPinLetterContentProviderTest {
             ),
             false
         );
-        when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
-        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
+        lenient().when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
+        lenient().when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        provider.createContent(null, DEFENDANT_PIN);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(null, DEFENDANT_PIN);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
-        provider.createContent(claim, null);
+        assertThrows(NullPointerException.class, () -> {
+            provider.createContent(claim, null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowIllegalArgumentWhenGivenEmptyDefendantPin() {
-        provider.createContent(claim, "");
+        assertThrows(IllegalArgumentException.class, () -> {
+            provider.createContent(claim, "");
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenIssuedOnDateIsMissing() {
-        claim = claim.toBuilder().issuedOn(null).build();
-        provider.createContent(claim, DEFENDANT_PIN);
+        assertThrows(IllegalStateException.class, () -> {
+            claim = claim.toBuilder().issuedOn(null).build();
+            provider.createContent(claim, DEFENDANT_PIN);
+        });
     }
 
     @Test

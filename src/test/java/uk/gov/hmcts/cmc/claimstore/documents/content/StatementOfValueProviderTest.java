@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.ALSO_HOUSING_DISREPAIR;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.CAN_NOT_STATE;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.HOUSING_DISREPAIR;
@@ -23,7 +24,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProv
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.RECOVER_UP_TO;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StatementOfValueProviderTest {
 
     private final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
@@ -81,14 +82,15 @@ public class StatementOfValueProviderTest {
         assertThat(statementOfValueContent.getClaimValue()).contains(CAN_NOT_STATE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowErrorForInvalidAmountType() {
-        //given
-        Claim claim = SampleClaim.builder().build();
+        assertThrows(IllegalArgumentException.class, () -> {
+            //given
+            Claim claim = SampleClaim.builder().build();
 
-        //when
-        statementOfValueProvider.create(claim);
-
+            //when
+            statementOfValueProvider.create(claim);
+        });
     }
 
     @Test

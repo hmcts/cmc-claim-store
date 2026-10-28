@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
@@ -16,11 +16,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResponseDeadlineCalculatorTest {
 
     private static final int DAYS_FOR_RESPONSE = 14;
@@ -36,14 +37,14 @@ public class ResponseDeadlineCalculatorTest {
 
     private ResponseDeadlineCalculator calculator;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(
             new PublicHolidaysCollection(bankHolidaysApi),
             nonWorkingDaysCollection
         );
 
-        when(bankHolidaysApi.retrieveAll()).thenReturn(loadFixture());
+        lenient().when(bankHolidaysApi.retrieveAll()).thenReturn(loadFixture());
 
         calculator = new ResponseDeadlineCalculator(
             workingDayIndicator, DAYS_FOR_SERVICE, DAYS_FOR_RESPONSE, POSTPONE_BY, DAYS_FOR_CLAIMANT_RESPONSE
