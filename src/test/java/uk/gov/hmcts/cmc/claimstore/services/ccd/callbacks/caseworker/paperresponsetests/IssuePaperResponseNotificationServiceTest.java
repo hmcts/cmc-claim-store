@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperresponsetests;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationSer
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IssuePaperResponseNotificationServiceTest {
 
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
@@ -37,7 +37,7 @@ public class IssuePaperResponseNotificationServiceTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         issuePaperResponseNotificationService = new IssuePaperResponseNotificationService(
                 notificationService,

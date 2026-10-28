@@ -20,7 +20,6 @@ public enum HwFMoreInfoRequiredDocuments {
     PRISONERS_INCOME("•\t Prisoner's Income  \n"),
     ANY_OTHER_INCOME("Any Other Income");
 
-
     private final String description;
 
     HwFMoreInfoRequiredDocuments(String description) {

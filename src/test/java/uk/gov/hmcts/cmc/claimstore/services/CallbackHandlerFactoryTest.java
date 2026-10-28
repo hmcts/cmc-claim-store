@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -34,7 +34,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CallbackHandlerFactoryTest {
 
     public static final String BEARER_TOKEN = "Bearer Token";
@@ -51,7 +51,7 @@ public class CallbackHandlerFactoryTest {
 
     private CallbackHandlerFactory callbackHandlerFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         doCallRealMethod().when(moreTimeRequestedCallbackHandler).handledEvents();
         doCallRealMethod().when(moreTimeRequestedCallbackHandler).register(anyMap());
@@ -155,7 +155,7 @@ public class CallbackHandlerFactoryTest {
             .build();
         try {
             callbackHandlerFactory.dispatch(params);
-            Assert.fail("Expected a CallbackException to be thrown");
+            Assertions.fail("Expected a CallbackException to be thrown");
         } catch (CallbackException expected) {
             assertThat(expected).hasMessage("Could not handle callback for event SealedClaimUpload");
         }
@@ -173,7 +173,7 @@ public class CallbackHandlerFactoryTest {
             .build();
         try {
             callbackHandlerFactory.dispatch(params);
-            Assert.fail("Expected a CallbackException to be thrown");
+            Assertions.fail("Expected a CallbackException to be thrown");
         } catch (CallbackException expected) {
             assertThat(expected).hasMessage("Could not handle callback for event nope");
         }
@@ -198,7 +198,7 @@ public class CallbackHandlerFactoryTest {
         try {
             callbackHandlerFactory.dispatch(params);
             verify(userService).getUserDetails(eq(BEARER_TOKEN));
-            Assert.fail("Expected a ForbiddenActionException to be thrown");
+            Assertions.fail("Expected a ForbiddenActionException to be thrown");
         } catch (ForbiddenActionException expected) {
             assertThat(expected).hasMessage("User does not have supported role for event DrawOrder");
         }

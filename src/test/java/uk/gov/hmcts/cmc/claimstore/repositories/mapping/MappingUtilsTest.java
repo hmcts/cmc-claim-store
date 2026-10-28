@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateFromUTC;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateTimeFromUTC;
@@ -35,10 +36,12 @@ public class MappingUtilsTest {
         assertThat(toNullableLocalDateTimeFromUTC(null)).isNull();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void toLocalDateTimeFromUtcWhenNullShouldThrow() {
-        //noinspection ConstantConditions
-        toLocalDateTimeFromUTC(null);
+        assertThrows(NullPointerException.class, () -> {
+            //noinspection ConstantConditions
+            toLocalDateTimeFromUTC(null);
+        });
     }
 
     @Test

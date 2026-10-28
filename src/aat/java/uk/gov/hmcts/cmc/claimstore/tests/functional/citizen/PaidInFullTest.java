@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
-import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 
@@ -24,9 +22,6 @@ public class PaidInFullTest extends BaseTest {
     public void before() {
         claimant = bootstrap.getClaimant();
     }
-
-    @Rule
-    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
     @Test
     @Retry

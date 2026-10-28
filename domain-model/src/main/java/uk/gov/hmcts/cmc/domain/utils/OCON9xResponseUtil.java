@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 public class OCON9xResponseUtil {
 
-    private OCON9xResponseUtil(){
+    private OCON9xResponseUtil() {
         // NO-OP
     }
 

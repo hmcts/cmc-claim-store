@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
@@ -22,7 +22,7 @@ public class ClaimantRejectPartAdmissionContentProviderTest {
 
     private ClaimantRejectPartAdmissionContentProvider service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         service = new ClaimantRejectPartAdmissionContentProvider(
             templateService,

@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
@@ -44,15 +44,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DrawOrderCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
@@ -108,7 +110,7 @@ public class DrawOrderCallbackHandlerTest {
     @Mock
     private ClaimService claimService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
@@ -117,9 +119,9 @@ public class DrawOrderCallbackHandlerTest {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);
 
-        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(UTC_ZONE)).thenReturn(clock);
+        lenient().when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+        lenient().when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        lenient().when(clock.withZone(UTC_ZONE)).thenReturn(clock);
 
         callbackRequest = CallbackRequest
             .builder()
@@ -214,17 +216,19 @@ public class DrawOrderCallbackHandlerTest {
         );
     }
 
-    @Test(expected = CallbackException.class)
+    @Test
     public void shouldThrowIfDraftOrderIsNotPresent() {
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
+        assertThrows(CallbackException.class, () -> {
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.ABOUT_TO_SUBMIT)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        drawOrderCallbackHandler.handle(callbackParams);
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            drawOrderCallbackHandler.handle(callbackParams);
+        });
     }
 
     @Test

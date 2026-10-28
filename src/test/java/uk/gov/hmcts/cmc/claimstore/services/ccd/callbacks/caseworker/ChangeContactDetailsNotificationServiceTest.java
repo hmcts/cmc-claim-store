@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -21,11 +21,12 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationServiceTest.CLAIMANT_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ChangeContactDetailsNotificationServiceTest {
 
     public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
@@ -40,7 +41,7 @@ public class ChangeContactDetailsNotificationServiceTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         changeContactDetailsNotificationService = new ChangeContactDetailsNotificationService(
             notificationService,
@@ -50,8 +51,8 @@ public class ChangeContactDetailsNotificationServiceTest {
         given(notificationsProperties.getFrontendBaseUrl()).willReturn(FRONTEND_BASE_URL);
         given(notificationsProperties.getTemplates()).willReturn(notificationTemplates);
         given(notificationTemplates.getEmail()).willReturn(emailTemplates);
-        given(emailTemplates.getDefendantContactDetailsChanged()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
-        given(emailTemplates.getClaimantContactDetailsChanged()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        lenient().when(emailTemplates.getDefendantContactDetailsChanged()).thenReturn(DEFENDANT_EMAIL_TEMPLATE);
+        lenient().when(emailTemplates.getClaimantContactDetailsChanged()).thenReturn(CLAIMANT_EMAIL_TEMPLATE);
     }
 
     @Test

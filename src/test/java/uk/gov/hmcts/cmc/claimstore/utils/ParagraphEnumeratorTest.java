@@ -1,19 +1,22 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ParagraphEnumeratorTest {
     private static final String PARAGRAPH_1 = "Lorem ipsum dolor sit amet";
     private static final String PARAGRAPH_2 = "Consectetur adipiscing alit";
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testSplitNullInput() {
-        ParagraphEnumerator.split(null);
+        assertThrows(NullPointerException.class, () -> {
+            ParagraphEnumerator.split(null);
+        });
     }
 
     @Test

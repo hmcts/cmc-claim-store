@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -23,10 +23,11 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MediationFailedNotificationServiceTest {
 
     private static final String TRANSFER_CLAIMANT = "TRANSFER_CLAIMANT";
@@ -46,7 +47,7 @@ public class MediationFailedNotificationServiceTest {
 
     private MediationFailedNotificationService mediationFailedNotificationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mediationFailedNotificationService =
             new MediationFailedNotificationService(notificationService, notificationsProperties);
@@ -54,14 +55,14 @@ public class MediationFailedNotificationServiceTest {
         when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
         when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
 
-        when(emailTemplates.getClaimantReadyForTransfer())
+        lenient().when(emailTemplates.getClaimantReadyForTransfer())
             .thenReturn(TRANSFER_CLAIMANT);
-        when(emailTemplates.getDefendantReadyForTransfer())
+        lenient().when(emailTemplates.getDefendantReadyForTransfer())
             .thenReturn(TRANSFER_DEFENDANT);
 
-        when(emailTemplates.getClaimantMediationFailureOfflineDQ())
+        lenient().when(emailTemplates.getClaimantMediationFailureOfflineDQ())
             .thenReturn(OFFLINE_MEDIATION_FAILED);
-        when(emailTemplates.getDefendantMediationFailureOfflineDQ())
+        lenient().when(emailTemplates.getDefendantMediationFailureOfflineDQ())
             .thenReturn(OFFLINE_MEDIATION_FAILED);
 
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn("BASELINE_URL");

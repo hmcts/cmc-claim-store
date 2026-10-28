@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import groovy.lang.IntRange;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ScheduledStateTransitionServiceTest {
 
     private ScheduledStateTransitionService scheduledStateTransitionService;
@@ -98,14 +99,14 @@ public class ScheduledStateTransitionServiceTest {
 
     private final Integer deadline = 10;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        when(stateTransition.name()).thenReturn("STATE_TRANSITION");
-        when(stateTransition.getQuery()).thenReturn(localDate -> QueryBuilders.termQuery("date", localDate));
-        when(stateTransition.getCaseEvent()).thenReturn(caseEvent);
-        when(stateTransition.getAppInsightsEvent()).thenReturn(appInsightsEvent);
+        lenient().when(stateTransition.name()).thenReturn("STATE_TRANSITION");
+        lenient().when(stateTransition.getQuery()).thenReturn(localDate -> QueryBuilders.termQuery("date", localDate));
+        lenient().when(stateTransition.getCaseEvent()).thenReturn(caseEvent);
+        lenient().when(stateTransition.getAppInsightsEvent()).thenReturn(appInsightsEvent);
 
-        when(environment.getProperty(anyString())).thenReturn(deadline.toString());
+        lenient().when(environment.getProperty(anyString())).thenReturn(deadline.toString());
 
         scheduledStateTransitionService = new ScheduledStateTransitionService(
             workingDayIndicator,

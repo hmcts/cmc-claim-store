@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission.builder;
 
 public class PartAdmissionResponseContentProviderTest {
@@ -23,10 +24,12 @@ public class PartAdmissionResponseContentProviderTest {
             new HearingContentProvider()
         );
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        //noinspection ConstantConditions
-        provider.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            //noinspection ConstantConditions
+            provider.createContent(null);
+        });
     }
 
     @Test

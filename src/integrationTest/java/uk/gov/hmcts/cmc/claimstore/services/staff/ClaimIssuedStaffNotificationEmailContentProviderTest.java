@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -16,7 +16,7 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest extends BaseMo
     @Autowired
     ClaimIssuedStaffNotificationEmailContentProvider provider;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Test

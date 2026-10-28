@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.events.offer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -13,7 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RejectSettlementAgreementStaffNotificationHandlerTest {
     private static final RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(
         SampleClaim.getClaimWithSettlementAgreementRejected());

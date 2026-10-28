@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.PartyDetailsContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -13,7 +13,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SettlementAgreementPDFContentProviderTest {
 
@@ -29,7 +30,7 @@ public class SettlementAgreementPDFContentProviderTest {
     private final SettlementAgreementPDFContentProvider classToTest =
         new SettlementAgreementPDFContentProvider(new PartyDetailsContentProvider());
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
@@ -54,14 +55,18 @@ public class SettlementAgreementPDFContentProviderTest {
             .build();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenNullClaim() {
-        classToTest.createContent(null);
+        assertThrows(NullPointerException.class, () -> {
+            classToTest.createContent(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowIllegalArgumentWhenNoResponse() {
-        classToTest.createContent(claimWithDefaultResponse);
+        assertThrows(IllegalArgumentException.class, () -> {
+            classToTest.createContent(claimWithDefaultResponse);
+        });
     }
 
     @Test

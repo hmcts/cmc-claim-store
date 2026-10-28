@@ -1,27 +1,28 @@
 package uk.gov.hmcts.cmc.claimstore.events.revieworder;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static java.time.LocalDateTime.now;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.RequestedBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.RequestedBy.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.EmailUtils.getDefendantEmail;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationServiceTest {
 
     public static final String NOTIFY_TO_DEFENDANT = "Notify to defendant when claimant requests for review order";
@@ -33,14 +34,15 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
     @Mock
     private NotificationService notificationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        when(properties.getTemplates()).thenReturn(templates);
-        when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
-        when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getReviewOrderEmailToDefendant())
+        super.setUp();
+        lenient().when(properties.getTemplates()).thenReturn(templates);
+        lenient().when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+        lenient().when(templates.getEmail()).thenReturn(emailTemplates);
+        lenient().when(emailTemplates.getReviewOrderEmailToDefendant())
             .thenReturn(NOTIFY_TO_DEFENDANT);
-        when(emailTemplates.getReviewOrderEmailToClaimant())
+        lenient().when(emailTemplates.getReviewOrderEmailToClaimant())
             .thenReturn(NOTIFY_TO_CLAIMANT);
 
         handler = new ReviewOrderCitizenNotificationHandler(notificationService, properties);
@@ -88,26 +90,30 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
         );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void sendThrowIllegalArgumentExceptionWhenClaimHasNoReviewOrder() {
-        ReviewOrderEvent event = new ReviewOrderEvent(
-            AUTHORISATION,
-            SampleClaim.builder().withReviewOrder(null).build());
+        assertThrows(IllegalArgumentException.class, () -> {
+            ReviewOrderEvent event = new ReviewOrderEvent(
+                AUTHORISATION,
+                SampleClaim.builder().withReviewOrder(null).build());
 
-        handler.onReviewOrderEvent(event);
+            handler.onReviewOrderEvent(event);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void sendThrowIllegalArgumentExceptionWhenRequestedByIsNullInReviewOrder() {
-        ReviewOrderEvent event = new ReviewOrderEvent(
-            AUTHORISATION,
-            SampleClaim.builder()
-                .withReviewOrder(ReviewOrder.builder()
-                    .requestedBy(null)
-                    .requestedAt(now())
-                    .build()
-                ).build());
+        assertThrows(IllegalArgumentException.class, () -> {
+            ReviewOrderEvent event = new ReviewOrderEvent(
+                AUTHORISATION,
+                SampleClaim.builder()
+                    .withReviewOrder(ReviewOrder.builder()
+                        .requestedBy(null)
+                        .requestedAt(now())
+                        .build()
+                    ).build());
 
-        handler.onReviewOrderEvent(event);
+            handler.onReviewOrderEvent(event);
+        });
     }
 }

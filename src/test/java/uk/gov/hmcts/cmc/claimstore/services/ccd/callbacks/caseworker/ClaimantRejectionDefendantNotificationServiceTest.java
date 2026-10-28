@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimantRejectionDefendantNotificationServiceTest {
 
     private static final String DOC_URL = "http://doc.url";
@@ -48,7 +48,7 @@ public class ClaimantRejectionDefendantNotificationServiceTest {
     @Mock
     private UserService userService;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
 
         BulkPrintDetails detail = BulkPrintDetails.builder().id(ID_SAMPLE).build();

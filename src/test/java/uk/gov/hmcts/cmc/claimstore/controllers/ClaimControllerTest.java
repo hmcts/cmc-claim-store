@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.apache.http.HttpException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -27,6 +27,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -47,7 +48,7 @@ public class ClaimControllerTest {
     @Mock
     private ClaimService claimService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         claimController = new ClaimController(claimService);
     }
@@ -124,18 +125,20 @@ public class ClaimControllerTest {
         assertThat(output).isEqualTo(response);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void shouldThrowNotFoundExceptionForInitiatePaymentForCitizen() {
-        //given
-        ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.initiatePayment(AUTHORISATION, input))
-            .thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> {
+            //given
+            ClaimData input = SampleClaimData.validDefaults();
+            when(claimService.initiatePayment(AUTHORISATION, input))
+                .thenThrow(NotFoundException.class);
 
-        //when
-        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
+            //when
+            CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
-        //then
-        assertThat(output).isNotNull();
+            //then
+            assertThat(output).isNotNull();
+        });
     }
 
     @Test

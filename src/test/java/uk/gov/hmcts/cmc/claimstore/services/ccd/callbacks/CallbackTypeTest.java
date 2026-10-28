@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CallbackTypeTest {
 
@@ -18,8 +19,10 @@ public class CallbackTypeTest {
             .isEqualTo(CallbackType.SUBMITTED);
     }
 
-    @Test(expected = CallbackException.class)
+    @Test
     public void shouldThrowIfUnknownCallback() {
-        CallbackType.fromValue("nope");
+        assertThrows(CallbackException.class, () -> {
+            CallbackType.fromValue("nope");
+        });
     }
 }
