@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 
 def versions = [
-  logback          : '1.5.6',
+  logback          : '1.6.6',
   reformJavaLogging: '4.0.0'
 ]
 
@@ -13,9 +13,9 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aspectj'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
-  implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.14'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.7.2-jre'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.21.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
@@ -25,7 +25,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.7'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
 }
