@@ -34,7 +34,7 @@ def versions = [
   restAssuredVersion: '6.3.0',
   pact_version    : '4.7.5',
   serviceAuthVersion : '6.1.2',
-  idamJavaClient : '4.1.0-CCD-8220',
+  idamJavaClient : '4.0.0',
   elasticSearch     : '7.17.29',
   lombok            : '1.18.48'
 ]
