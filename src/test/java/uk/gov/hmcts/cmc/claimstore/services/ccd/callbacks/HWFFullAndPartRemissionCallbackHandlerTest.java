@@ -118,7 +118,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
             .build();
     }
 
-
     //  Test cases for Part Remission
     @Test
     void shouldUpdateFeeRemitted() {
@@ -198,7 +197,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
 
         assertThat(claim).isNotNull();
     }
-
 
     // Test cases for Full Remission
     @Test

@@ -19,4 +19,35 @@
         <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
         <cve>CVE-2025-15104</cve>
     </suppress>
+
+    <!-- False positive: CVE-2026-53914 affects kotlin-gradle-plugin build cache metadata only, not Kotlin runtime libs (DependencyCheck #8749) -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib.*@.*$</packageUrl>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
+
+    <!-- False positive: CVE-2026-33117 affects Azure Key Vault Keys SDK (broad azure_sdk_for_java CPE), not Application Insights -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/applicationinsights\-.*@.*$</packageUrl>
+        <cve>CVE-2026-33117</cve>
+    </suppress>
+
+    <!-- False positive: CVE-2025-21199 affects Azure Agent installer for Backup and Site Recovery (azure_agent CPE), not Application Insights -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/applicationinsights\-core@.*$</packageUrl>
+        <cve>CVE-2025-21199</cve>
+    </suppress>
+
+    <!-- Elasticsearch 7.17.29: CVEs affect the Elasticsearch server/Kibana-facing features, not the client and core jars used here.
+         Revisit when Elasticsearch is upgraded. -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.elasticsearch/elasticsearch.*@7\.17\..*$</packageUrl>
+        <cve>CVE-2025-37731</cve>
+        <cve>CVE-2024-52980</cve>
+        <cve>CVE-2025-68384</cve>
+        <cve>CVE-2026-72683</cve>
+        <cve>CVE-2025-37727</cve>
+        <cve>CVE-2026-102407</cve>
+        <cve>CVE-2025-68390</cve>
+    </suppress>
 </suppressions>
