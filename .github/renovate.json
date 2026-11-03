@@ -23,32 +23,21 @@
   "helmv3": {
     "bumpVersion": "patch"
   },
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": [
-        "^Dockerfile$"
-      ],
-      "matchStrings": [
-        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
-      ]
+      "customType": "regex",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"]
     }
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "pact"
-      ],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/pact/"
+      ]
     },
     {
-      "matchPackagePatterns": [
-        "org.springframework",
-        "org.springdoc",
-        "spring-boot",
-        "spring-cloud",
-        "jakarta.persistence",
-        "org.hibernate"
-      ],
       "matchUpdateTypes": [
         "minor",
         "patch"
@@ -56,7 +45,15 @@
       "groupName": "Spring Boot and related updates",
       "groupSlug": "spring-boot-related",
       "automerge": true,
-      "automergeType": "pr"
+      "automergeType": "pr",
+      "matchPackageNames": [
+        "/org.springframework/",
+        "/org.springdoc/",
+        "/spring-boot/",
+        "/spring-cloud/",
+        "/jakarta.persistence/",
+        "/org.hibernate/"
+      ]
     },
     {
       "matchManagers": [
