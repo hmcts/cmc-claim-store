@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
@@ -32,12 +31,12 @@ public class DataFactory {
         });
     }
 
-    public static List<SearchCourtByNameResponse> createSearchCourtByNameResponseFromJson(String jsonFileSrc) {
+    public static SearchCourtByNameResponse createSearchCourtByNameResponseFromJson(String jsonFileSrc) {
         return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
         });
     }
 
-    public static SearchCourtByPostcodeResponse createSearchCourtByPostcodeResponseFromJson(String jsonFileSrc) {
+    public static List<CourtDetails> createSearchCourtByPostcodeResponseFromJson(String jsonFileSrc) {
         return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
         });
     }

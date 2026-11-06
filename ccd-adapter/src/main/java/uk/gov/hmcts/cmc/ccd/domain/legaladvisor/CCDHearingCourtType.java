@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum CCDHearingCourtType {
-    EDMONTON("N182TN"),
-    MANCHESTER("M609DJ"),
-    BIRMINGHAM("B11AA"),
-    CLERKENWELL("EC1V3RE"),
+    EDMONTON("N18 2TN"),
+    MANCHESTER("M60 9DJ"),
+    BIRMINGHAM("B1 1AA"),
+    CLERKENWELL("EC1V 3RE"),
     OTHER("");
 
     private String postcode;

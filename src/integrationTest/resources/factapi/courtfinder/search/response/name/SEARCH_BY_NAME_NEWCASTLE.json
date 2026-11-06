@@ -89,7 +89,7 @@
       "external_link": "",
       "display_url": null,
       "external_link_desc": null,
-      "display_name": "High Court cases – serious or high profile criminal or civil law cases",
+      "display_name": "High Court cases \u2013 serious or high profile criminal or civil law cases",
       "display_external_link": null
     },
     {
@@ -342,5 +342,6 @@
     "is_a_service_centre": false,
     "intro_paragraph": "",
     "intro_paragraph_cy": ""
-  }
+  },
+  "lastUpdatedAt": null
 }

@@ -9,7 +9,6 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 
@@ -33,7 +32,7 @@ public class CourtFinderService {
     }
 
     public List<Court> getCourtDetailsListFromPostcode(String postcode) {
-        SearchCourtByPostcodeResponse searchByPostcodeResponse;
+        List<CourtDetails> searchByPostcodeResponse;
         try {
             searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
         } catch (DecodeException ex) {
@@ -51,11 +50,10 @@ public class CourtFinderService {
         }
 
         List<Court> courtList = new ArrayList<>();
-        if (ofNullable(searchByPostcodeResponse).isEmpty()
-            || ofNullable(searchByPostcodeResponse.getCourts()).isEmpty()) {
+        if (ofNullable(searchByPostcodeResponse).isEmpty()) {
             return courtList;
         }
-        for (CourtDetails courtDetails : searchByPostcodeResponse.getCourts()) {
+        for (CourtDetails courtDetails : searchByPostcodeResponse) {
             courtList.add(getCourtDetailsSafely(courtDetails.getSlug()));
         }
         return courtList;
@@ -85,10 +83,10 @@ public class CourtFinderService {
     }
 
     public List<Court> getCourtsByName(String name) {
-        List<SearchCourtByNameResponse> searchCourtByNameResponses = courtFinderApi.findMoneyClaimCourtByName(name);
+        SearchCourtByNameResponse searchCourtByNameResponse = courtFinderApi.findMoneyClaimCourtByName(name);
         List<Court> courtList = new ArrayList<>();
 
-        for (SearchCourtByNameResponse searchCourtByNameResponse : searchCourtByNameResponses) {
+        if (searchCourtByNameResponse != null) {
             SearchCourtBySlugResponse searchCourtBySlugResponse = courtFinderApi.getCourtDetailsFromNameSlug(searchCourtByNameResponse.getSlug());
 
             Court court = Court.builder()
@@ -103,9 +101,9 @@ public class CourtFinderService {
         return courtList
             .stream()
             .filter(
-                c -> c.getAreasOfLaw()
+                c -> ofNullable(c.getAreasOfLaw()).orElseGet(ArrayList::new)
                     .stream()
-                    .anyMatch(a -> a.getName().equalsIgnoreCase(MONEY_CLAIM_AOL))
+                    .anyMatch(a -> MONEY_CLAIM_AOL.equalsIgnoreCase(a.getName()))
             ).collect(Collectors.toList());
     }
 }

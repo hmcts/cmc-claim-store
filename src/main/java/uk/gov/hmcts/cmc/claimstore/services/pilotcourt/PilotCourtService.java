@@ -93,12 +93,14 @@ public class PilotCourtService {
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
 
-        if (pilotCourt.getHearingCourt().isEmpty()) {
-            Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
-            pilotCourt.setHearingCourt(court.orElse(null));
-        }
+        synchronized (pilotCourt) {
+            if (pilotCourt.getHearingCourt().isEmpty()) {
+                Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
+                pilotCourt.setHearingCourt(court.orElse(null));
+            }
 
-        return pilotCourt.getHearingCourt();
+            return pilotCourt.getHearingCourt();
+        }
     }
 
     public boolean isPilotCourt(String courtName, Pilot pilot, LocalDateTime claimCreated) {
@@ -140,25 +142,7 @@ public class PilotCourtService {
 
             Map<Pilot, LocalDateTime> pilots = getPilots(csvRecord);
 
-            try {
-                Optional<HearingCourt> pilotCourt = getCourt(postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
-            } catch (DecodeException e) {
-                logger.warn("Failed to decode Court Finder API response for postcode {}: {}", postcode, e.getMessage());
-                logger.debug("Court Finder decode failure for postcode {}", postcode, e);
-                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
-            } catch (FeignException e) {
-                logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
-                logger.debug("Court Finder client failure for postcode {}", postcode, e);
-                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
-            } catch (RuntimeException e) {
-                logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
-                logger.debug("Unexpected Court Finder failure for postcode {}", postcode, e);
-                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
-            }
+            pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
         }
 
         logger.info("All pilot courts: {}", pilotCourts.values());
@@ -201,12 +185,29 @@ public class PilotCourtService {
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
-        List<Court> courtList = courtFinderService.getCourtDetailsListFromPostcode(postcode);
+        try {
+            List<Court> courtList = courtFinderService.getCourtDetailsListFromPostcode(postcode);
 
-        return courtList
-            .stream()
-            .findFirst()
-            .map(hearingCourtMapper::from);
+            return courtList
+                .stream()
+                .findFirst()
+                .map(hearingCourtMapper::from);
+        } catch (DecodeException e) {
+            logger.warn("Failed to decode Court Finder API response for postcode {}: {}", postcode, e.getMessage());
+            logger.debug("Court Finder decode failure for postcode {}", postcode, e);
+            appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+            return Optional.empty();
+        } catch (FeignException e) {
+            logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
+            logger.debug("Court Finder client failure for postcode {}", postcode, e);
+            appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+            return Optional.empty();
+        } catch (RuntimeException e) {
+            logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
+            logger.debug("Unexpected Court Finder failure for postcode {}", postcode, e);
+            appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+            return Optional.empty();
+        }
     }
 
     public String getPilotCourtId(HearingCourt hearingCourt) {

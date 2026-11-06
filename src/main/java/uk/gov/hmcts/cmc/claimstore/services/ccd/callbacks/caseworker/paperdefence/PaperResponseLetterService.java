@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
-import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -200,11 +199,11 @@ public class PaperResponseLetterService {
             || partyType == CCDPartyType.ORGANISATION)
             ? claimantAddress.getPostCode() : defendantAddress.getPostCode();
 
-        SearchCourtByPostcodeResponse searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
+        List<CourtDetails> searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
         List<Court> courtList = new ArrayList<>();
 
-        for (CourtDetails courtDetails: searchByPostcodeResponse.getCourts()) {
+        for (CourtDetails courtDetails: searchByPostcodeResponse) {
             SearchCourtBySlugResponse searchCourtBySlugResponse = courtFinderApi.getCourtDetailsFromNameSlug(courtDetails.getSlug());
 
             Court court = Court.builder()
