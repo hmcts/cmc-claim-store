@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <!-- Elasticsearch 7.17.20 pulls Lucene replicator <9.12; no upstream bump yet -->
-        <cve>CVE-2024-45772</cve>
-
         <!-- Commons FileUpload 1.6.0 still vulnerable until 1.6.1 released -->
         <cve>CVE-2025-48976</cve>
     </suppress>
@@ -38,16 +35,4 @@
         <cve>CVE-2025-21199</cve>
     </suppress>
 
-    <!-- Elasticsearch 7.17.29: CVEs affect the Elasticsearch server/Kibana-facing features, not the client and core jars used here.
-         Revisit when Elasticsearch is upgraded. -->
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.elasticsearch/elasticsearch.*@7\.17\..*$</packageUrl>
-        <cve>CVE-2025-37731</cve>
-        <cve>CVE-2024-52980</cve>
-        <cve>CVE-2025-68384</cve>
-        <cve>CVE-2026-72683</cve>
-        <cve>CVE-2025-37727</cve>
-        <cve>CVE-2026-102407</cve>
-        <cve>CVE-2025-68390</cve>
-    </suppress>
 </suppressions>

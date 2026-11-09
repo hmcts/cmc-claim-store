@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Queries;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Query;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SearchClause;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
@@ -56,12 +56,12 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
             LocalDateTime.now(), mediationAgreedDate);
 
         Query mediationQuery = new Query(
-            QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery(
+            Queries.boolQuery()
+                .must(Queries.termQuery(
                     "data.respondents.value.responseFreeMediationOption", CCDYesNoOption.YES.name()))
-                .must(QueryBuilders.termQuery(
+                .must(Queries.termQuery(
                     "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
-                .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
+                .must(Queries.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
                     .to(DateUtils.endOfDay(mediationAgreedDate), true)), 500, 0
         );
@@ -73,11 +73,11 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     public List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate) {
 
         Query mediationQuery = new Query(
-            QueryBuilders.boolQuery()
-                .must(QueryBuilders.matchQuery(
+            Queries.boolQuery()
+                .must(Queries.matchQuery(
                     "data.respondents.value.countyCourtJudgmentRequest.type",
                     CountyCourtJudgmentType.DEFAULT.name()))
-                .must(QueryBuilders.rangeQuery("data.respondents.value.countyCourtJudgmentRequest.requestedDate")
+                .must(Queries.rangeQuery("data.respondents.value.countyCourtJudgmentRequest.requestedDate")
                     .from(DateUtils.startOfDay(ccjRequestedDate), true)
                     .to(DateUtils.endOfDay(ccjRequestedDate), true)), 1000, 0
         );
@@ -87,9 +87,9 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     }
 
     public Integer getClaimCountForClaimant(String submitterId, User user) {
-        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
-            .mustNot(QueryBuilders.matchQuery(CLAIM_STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+        Query getClaimsForClaimant = new Query(Queries.boolQuery()
+            .must(Queries.matchQuery("data.submitterId", submitterId))
+            .mustNot(Queries.matchQuery(CLAIM_STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
             10, 0);
 
         return getClaimsCountById(user, getClaimsForClaimant);
@@ -97,8 +97,8 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     public Integer getClaimCountForDefendant(String submitterId, User user) {
 
-        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.matchQuery("data.respondents.value.defendantId", submitterId)),
+        Query getClaimsForClaimant = new Query(Queries.boolQuery()
+            .must(Queries.matchQuery("data.respondents.value.defendantId", submitterId)),
             10, 0);
 
         return getClaimsCountById(user, getClaimsForClaimant);
@@ -106,17 +106,17 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     public List<Claim> getClaimsForClaimant(String submitterId, User user, int index) {
 
-        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
-            .mustNot(QueryBuilders.matchQuery(CLAIM_STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+        Query getClaimsForClaimant = new Query(Queries.boolQuery()
+            .must(Queries.matchQuery("data.submitterId", submitterId))
+            .mustNot(Queries.matchQuery(CLAIM_STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
             10, index);
         return searchClaimsWith(user, getClaimsForClaimant);
     }
 
     public List<Claim> getClaimsForDefendant(String submitterId, User user, int index) {
 
-        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.matchQuery("data.respondents.value.defendantId", submitterId)),
+        Query getClaimsForClaimant = new Query(Queries.boolQuery()
+            .must(Queries.matchQuery("data.respondents.value.defendantId", submitterId)),
             10, index);
 
         return searchClaimsWith(user, getClaimsForClaimant);
@@ -124,15 +124,15 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     @Override
     public List<Claim> getClaimsReadyForTransfer(User user) {
-        Query readyForTransferQuery = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.termQuery(CLAIM_STATE, ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
-            .must(QueryBuilders.existsQuery("data.hearingCourtName"))
-            .must(QueryBuilders.existsQuery("data.hearingCourtAddress")), 1000, 0);
+        Query readyForTransferQuery = new Query(Queries.boolQuery()
+            .must(Queries.termQuery(CLAIM_STATE, ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
+            .must(Queries.existsQuery("data.hearingCourtName"))
+            .must(Queries.existsQuery("data.hearingCourtAddress")), 1000, 0);
         return searchClaimsWith(user, readyForTransferQuery);
     }
 
     @Override
-    public List<Claim> getClaims(User user, QueryBuilder queryBuilder) {
+    public List<Claim> getClaims(User user, SearchClause queryBuilder) {
         return searchClaimsWith(user, new Query(queryBuilder, 1000, 0));
     }
 
