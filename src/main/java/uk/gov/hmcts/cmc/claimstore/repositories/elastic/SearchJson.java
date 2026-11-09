@@ -72,6 +72,15 @@ final class SearchJson {
         out.append(",\n");
     }
 
+    void bool(boolean value) {
+        out.append(value ? "true" : "false");
+    }
+
+    void boost() {
+        fieldName("boost");
+        raw("1.0");
+    }
+
     @Override
     public String toString() {
         return out.toString();

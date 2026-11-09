@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories.elastic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Builds the small set of CCD search clauses this service sends. The JSON matches
@@ -37,7 +38,29 @@ public final class Queries {
         return new MatchAllQuery();
     }
 
-    public static final class BoolQuery implements SearchClause {
+    private static void writeBoosted(SearchJson json, String type, String field, Consumer<SearchJson> body) {
+        json.startObject();
+        json.fieldName(type);
+        json.startObject();
+        json.fieldName(field);
+        json.startObject();
+        body.accept(json);
+        json.comma();
+        json.boost();
+        json.endObject();
+        json.endObject();
+        json.endObject();
+    }
+
+    abstract static class JsonClause implements SearchClause {
+
+        @Override
+        public final String toString() {
+            return SearchJson.render(this);
+        }
+    }
+
+    public static final class BoolQuery extends JsonClause {
 
         private final List<SearchClause> must = new ArrayList<>();
         private final List<SearchClause> mustNot = new ArrayList<>();
@@ -57,6 +80,16 @@ public final class Queries {
             json.startObject();
             json.fieldName("bool");
             json.startObject();
+            writeClauses(json);
+            json.fieldName("adjust_pure_negative");
+            json.bool(true);
+            json.comma();
+            json.boost();
+            json.endObject();
+            json.endObject();
+        }
+
+        private void writeClauses(SearchJson json) {
             boolean wroteClause = false;
             if (!must.isEmpty()) {
                 json.fieldName("must");
@@ -74,38 +107,10 @@ public final class Queries {
             if (wroteClause) {
                 json.comma();
             }
-            json.fieldName("adjust_pure_negative");
-            json.raw("true");
-            json.comma();
-            json.fieldName("boost");
-            json.raw("1.0");
-            json.endObject();
-            json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
-            }
-            if (!(other instanceof BoolQuery boolQuery)) {
-                return false;
-            }
-            return must.equals(boolQuery.must) && mustNot.equals(boolQuery.mustNot);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(must, mustNot);
         }
     }
 
-    public static final class TermQuery implements SearchClause {
+    public static final class TermQuery extends JsonClause {
 
         private final String field;
         private final Object value;
@@ -117,24 +122,10 @@ public final class Queries {
 
         @Override
         public void write(SearchJson json) {
-            json.startObject();
-            json.fieldName("term");
-            json.startObject();
-            json.fieldName(field);
-            json.startObject();
-            json.fieldName("value");
-            json.value(value);
-            json.comma();
-            json.fieldName("boost");
-            json.raw("1.0");
-            json.endObject();
-            json.endObject();
-            json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
+            writeBoosted(json, "term", field, inner -> {
+                inner.fieldName("value");
+                inner.value(value);
+            });
         }
 
         @Override
@@ -154,7 +145,7 @@ public final class Queries {
         }
     }
 
-    public static final class MatchQuery implements SearchClause {
+    public static final class MatchQuery extends JsonClause {
 
         private final String field;
         private final Object value;
@@ -166,65 +157,35 @@ public final class Queries {
 
         @Override
         public void write(SearchJson json) {
-            json.startObject();
-            json.fieldName("match");
-            json.startObject();
-            json.fieldName(field);
-            json.startObject();
-            json.fieldName("query");
-            json.value(value);
-            json.comma();
-            json.fieldName("operator");
-            json.string("OR");
-            json.comma();
-            json.fieldName("prefix_length");
-            json.raw("0");
-            json.comma();
-            json.fieldName("max_expansions");
-            json.raw("50");
-            json.comma();
-            json.fieldName("fuzzy_transpositions");
-            json.raw("true");
-            json.comma();
-            json.fieldName("lenient");
-            json.raw("false");
-            json.comma();
-            json.fieldName("zero_terms_query");
-            json.string("NONE");
-            json.comma();
-            json.fieldName("auto_generate_synonyms_phrase_query");
-            json.raw("true");
-            json.comma();
-            json.fieldName("boost");
-            json.raw("1.0");
-            json.endObject();
-            json.endObject();
-            json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
-            }
-            if (!(other instanceof MatchQuery matchQuery)) {
-                return false;
-            }
-            return field.equals(matchQuery.field) && Objects.equals(value, matchQuery.value);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(field, value);
+            writeBoosted(json, "match", field, inner -> {
+                inner.fieldName("query");
+                inner.value(value);
+                inner.comma();
+                inner.fieldName("operator");
+                inner.string("OR");
+                inner.comma();
+                inner.fieldName("prefix_length");
+                inner.raw("0");
+                inner.comma();
+                inner.fieldName("max_expansions");
+                inner.raw("50");
+                inner.comma();
+                inner.fieldName("fuzzy_transpositions");
+                inner.bool(true);
+                inner.comma();
+                inner.fieldName("lenient");
+                inner.bool(false);
+                inner.comma();
+                inner.fieldName("zero_terms_query");
+                inner.string("NONE");
+                inner.comma();
+                inner.fieldName("auto_generate_synonyms_phrase_query");
+                inner.bool(true);
+            });
         }
     }
 
-    public static final class RangeQuery implements SearchClause {
+    public static final class RangeQuery extends JsonClause {
 
         private final String field;
         private Object from;
@@ -258,57 +219,23 @@ public final class Queries {
 
         @Override
         public void write(SearchJson json) {
-            json.startObject();
-            json.fieldName("range");
-            json.startObject();
-            json.fieldName(field);
-            json.startObject();
-            json.fieldName("from");
-            json.value(from);
-            json.comma();
-            json.fieldName("to");
-            json.value(to);
-            json.comma();
-            json.fieldName("include_lower");
-            json.raw(includeLower ? "true" : "false");
-            json.comma();
-            json.fieldName("include_upper");
-            json.raw(includeUpper ? "true" : "false");
-            json.comma();
-            json.fieldName("boost");
-            json.raw("1.0");
-            json.endObject();
-            json.endObject();
-            json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
-            }
-            if (!(other instanceof RangeQuery rangeQuery)) {
-                return false;
-            }
-            return field.equals(rangeQuery.field)
-                && Objects.equals(from, rangeQuery.from)
-                && Objects.equals(to, rangeQuery.to)
-                && includeLower == rangeQuery.includeLower
-                && includeUpper == rangeQuery.includeUpper;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(field, from, to, includeLower, includeUpper);
+            writeBoosted(json, "range", field, inner -> {
+                inner.fieldName("from");
+                inner.value(from);
+                inner.comma();
+                inner.fieldName("to");
+                inner.value(to);
+                inner.comma();
+                inner.fieldName("include_lower");
+                inner.bool(includeLower);
+                inner.comma();
+                inner.fieldName("include_upper");
+                inner.bool(includeUpper);
+            });
         }
     }
 
-    public static final class ExistsQuery implements SearchClause {
+    public static final class ExistsQuery extends JsonClause {
 
         private final String field;
 
@@ -324,35 +251,13 @@ public final class Queries {
             json.fieldName("field");
             json.string(field);
             json.comma();
-            json.fieldName("boost");
-            json.raw("1.0");
+            json.boost();
             json.endObject();
             json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
-            }
-            if (!(other instanceof ExistsQuery existsQuery)) {
-                return false;
-            }
-            return field.equals(existsQuery.field);
-        }
-
-        @Override
-        public int hashCode() {
-            return field.hashCode();
         }
     }
 
-    public static final class MatchAllQuery implements SearchClause {
+    public static final class MatchAllQuery extends JsonClause {
 
         private MatchAllQuery() {
         }
@@ -362,25 +267,9 @@ public final class Queries {
             json.startObject();
             json.fieldName("match_all");
             json.startObject();
-            json.fieldName("boost");
-            json.raw("1.0");
+            json.boost();
             json.endObject();
             json.endObject();
-        }
-
-        @Override
-        public String toString() {
-            return SearchJson.render(this);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof MatchAllQuery;
-        }
-
-        @Override
-        public int hashCode() {
-            return MatchAllQuery.class.hashCode();
         }
     }
 }
