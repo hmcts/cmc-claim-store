@@ -14,7 +14,7 @@
   ],
   "platformAutomerge": false,
   "schedule": [
-    "after 7am and before 8am every weekday",
+    "after 7am and before 9am every weekday",
     "after 5pm and before 8pm every weekday"
   ],
   "rebaseWhen": "behind-base-branch",
