@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.elasticsearch.index.query.QueryBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SearchClause;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ public interface CaseSearchApi {
 
     List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 
-    List<Claim> getClaims(User user, QueryBuilder queryBuilder);
+    List<Claim> getClaims(User user, SearchClause queryBuilder);
 
     List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
 

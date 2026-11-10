@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import groovy.lang.IntRange;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +19,8 @@ import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Queries;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SearchClause;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransition;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -102,7 +102,7 @@ public class ScheduledStateTransitionServiceTest {
     @BeforeEach
     public void setUp() {
         lenient().when(stateTransition.name()).thenReturn("STATE_TRANSITION");
-        lenient().when(stateTransition.getQuery()).thenReturn(localDate -> QueryBuilders.termQuery("date", localDate));
+        lenient().when(stateTransition.getQuery()).thenReturn(localDate -> Queries.termQuery("date", localDate));
         lenient().when(stateTransition.getCaseEvent()).thenReturn(caseEvent);
         lenient().when(stateTransition.getAppInsightsEvent()).thenReturn(appInsightsEvent);
 
@@ -131,7 +131,7 @@ public class ScheduledStateTransitionServiceTest {
         scheduledStateTransitionService.transitionClaims(tuesdayAfter4pm, user, stateTransition);
 
         LocalDate returnDate = tuesdayAfter4pm.toLocalDate().minusDays(deadline);
-        QueryBuilder expected = stateTransition.getQuery().apply(returnDate);
+        SearchClause expected = stateTransition.getQuery().apply(returnDate);
         verify(caseSearchApi, once()).getClaims(eq(user), eq(expected));
     }
 

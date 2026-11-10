@@ -1,13 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Queries;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Query;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SampleQueryConstants;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -74,7 +73,7 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void getClaimsShouldCallCoreCaseDataApi() {
         User user = new User(AUTHORISATION, null);
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        Queries.BoolQuery queryBuilder = Queries.boolQuery();
         ccdElasticSearchRepository.getClaims(user, queryBuilder);
         verify(coreCaseDataApi).searchCases(
             eq(AUTHORISATION),
