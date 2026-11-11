@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.email;
 
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.logs.Logger;
-import io.opentelemetry.api.logs.Severity;
+import com.microsoft.applicationinsights.TelemetryClient;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,24 +13,26 @@ import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
 import java.io.IOException;
 
+import static java.util.Collections.singletonMap;
+
 @Service
 public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
     public static final String EMAIL_SUBJECT = "EmailSubject";
-    private final org.slf4j.Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    private final Logger telemetry;
+    private final TelemetryClient telemetryClient;
     private final boolean asyncEventOperationEnabled;
     private final SendGridClient sendGridClient;
 
     @Autowired
     public EmailService(
-        Logger telemetry,
+        TelemetryClient telemetryClient,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
         SendGridClient sendGridClient
     ) {
-        this.telemetry = telemetry;
+        this.telemetryClient = telemetryClient;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
         this.sendGridClient = sendGridClient;
     }
@@ -64,11 +64,7 @@ public class EmailService {
         );
         logger.error(errorMessage, exception);
 
-        telemetry.logRecordBuilder()
-            .setSeverity(Severity.INFO)
-            .setBody(NOTIFICATION_FAILURE)
-            .setAllAttributes(Attributes.of(AttributeKey.stringKey(EMAIL_SUBJECT), emailData.getSubject()))
-            .emit();
+        telemetryClient.trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
         if (asyncEventOperationEnabled) {
             throw exception;
         }

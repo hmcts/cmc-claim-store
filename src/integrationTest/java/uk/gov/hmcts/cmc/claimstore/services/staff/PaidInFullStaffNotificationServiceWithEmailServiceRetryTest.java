@@ -18,8 +18,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
@@ -74,6 +76,10 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends
         service.notifyPaidInFull(claimWithPaidInFull);
 
         verify(javaMailSender, atLeast(3)).createMimeMessage();
-        verify(telemetry.logRecordBuilder()).setBody("Notification - failure");
+        verify(telemetry).trackEvent(
+            eq("Notification - failure"),
+            eq(singletonMap("EmailSubject", "Paid in Full 000MC001: John Rambo v Dr. John Smith")),
+            eq(null)
+        );
     }
 }

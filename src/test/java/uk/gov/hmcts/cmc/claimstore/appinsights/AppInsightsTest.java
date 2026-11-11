@@ -6,9 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.read.ListAppender;
 import com.google.common.collect.ImmutableMap;
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.logs.LogRecordBuilder;
-import io.opentelemetry.api.logs.Severity;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,20 +19,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AppInsightsTest {
     @Mock
-    private io.opentelemetry.api.logs.Logger telemetry;
-
-    @Mock
-    private LogRecordBuilder logRecord;
+    private TelemetryClient telemetryClient;
 
     private ListAppender<ILoggingEvent> listAppender;
     private Logger logger = (Logger) LoggerFactory.getLogger(AppInsights.class);
@@ -43,11 +38,6 @@ class AppInsightsTest {
 
     @BeforeEach
     void prepareLogger() {
-        when(telemetry.logRecordBuilder()).thenReturn(logRecord);
-        when(logRecord.setSeverity(any(Severity.class))).thenReturn(logRecord);
-        when(logRecord.setBody(anyString())).thenReturn(logRecord);
-        when(logRecord.setAllAttributes(any(Attributes.class))).thenReturn(logRecord);
-        when(logRecord.setException(any(Throwable.class))).thenReturn(logRecord);
         listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
@@ -63,26 +53,24 @@ class AppInsightsTest {
     class ActiveTelemetry {
         @BeforeEach
         void setUp() {
-            appInsights = new AppInsights(telemetry, "");
+            appInsights = new AppInsights(telemetryClient, "");
         }
 
         @Test
         void testTrackEvent() {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, "reference", "value");
-            verify(logRecord).setBody(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString());
-            verify(logRecord).setAllAttributes(Attributes.builder()
-                .put("reference", "value")
-                .build());
-            verify(logRecord).emit();
+            verify(telemetryClient).trackEvent(
+                eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
+                eq(singletonMap("reference", "value")),
+                isNull()
+            );
         }
 
         @Test
         void testTrackException() {
             RuntimeException exception = new RuntimeException("expected exception");
             appInsights.trackException(exception);
-            verify(logRecord).setBody("RuntimeException");
-            verify(logRecord).setException(exception);
-            verify(logRecord).emit();
+            verify(telemetryClient).trackException(exception);
         }
 
         @AfterEach
@@ -98,17 +86,17 @@ class AppInsightsTest {
 
         @BeforeEach
         void setUp() {
-            appInsights = new AppInsights(telemetry, "STDOUT");
+            appInsights = new AppInsights(telemetryClient, "STDOUT");
         }
 
         @Test
         void testTrackEventSingleReference() {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, "reference", "value");
-            verify(logRecord).setBody(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString());
-            verify(logRecord).setAllAttributes(Attributes.builder()
-                .put("reference", "value")
-                .build());
-            verify(logRecord).emit();
+            verify(telemetryClient).trackEvent(
+                eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
+                eq(singletonMap("reference", "value")),
+                isNull()
+            );
 
             List<ILoggingEvent> logsList = listAppender.list;
             assertThat(logsList).hasSize(1);
@@ -128,12 +116,11 @@ class AppInsightsTest {
                 "reference2", "value2"
             );
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, properties);
-            verify(logRecord).setBody(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString());
-            verify(logRecord).setAllAttributes(Attributes.builder()
-                .put("reference1", "value1")
-                .put("reference2", "value2")
-                .build());
-            verify(logRecord).emit();
+            verify(telemetryClient).trackEvent(
+                eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
+                eq(properties),
+                isNull()
+            );
 
             List<ILoggingEvent> logsList = listAppender.list;
             assertThat(logsList).hasSize(1);
@@ -151,9 +138,7 @@ class AppInsightsTest {
         void testTrackException() {
             RuntimeException exception = new RuntimeException("expected exception");
             appInsights.trackException(exception);
-            verify(logRecord).setBody("RuntimeException");
-            verify(logRecord).setException(exception);
-            verify(logRecord).emit();
+            verify(telemetryClient).trackException(exception);
 
             List<ILoggingEvent> logsList = listAppender.list;
             assertThat(logsList).hasSize(1);
