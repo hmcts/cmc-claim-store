@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.email;
 
-import com.microsoft.applicationinsights.TelemetryClient;
-import org.slf4j.Logger;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.logs.Severity;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,26 +15,24 @@ import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
 import java.io.IOException;
 
-import static java.util.Collections.singletonMap;
-
 @Service
 public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
     public static final String EMAIL_SUBJECT = "EmailSubject";
-    private final Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    private final TelemetryClient telemetryClient;
+    private final Logger telemetry;
     private final boolean asyncEventOperationEnabled;
     private final SendGridClient sendGridClient;
 
     @Autowired
     public EmailService(
-        TelemetryClient telemetryClient,
+        Logger telemetry,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
         SendGridClient sendGridClient
     ) {
-        this.telemetryClient = telemetryClient;
+        this.telemetry = telemetry;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
         this.sendGridClient = sendGridClient;
     }
@@ -64,7 +64,11 @@ public class EmailService {
         );
         logger.error(errorMessage, exception);
 
-        telemetryClient.trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
+        telemetry.logRecordBuilder()
+            .setSeverity(Severity.INFO)
+            .setBody(NOTIFICATION_FAILURE)
+            .setAllAttributes(Attributes.of(AttributeKey.stringKey(EMAIL_SUBJECT), emailData.getSubject()))
+            .emit();
         if (asyncEventOperationEnabled) {
             throw exception;
         }

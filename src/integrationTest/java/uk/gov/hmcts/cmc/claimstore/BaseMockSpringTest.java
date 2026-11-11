@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.google.common.collect.ImmutableMap;
-import com.microsoft.applicationinsights.TelemetryClient;
+import io.opentelemetry.api.logs.Logger;
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,8 +142,8 @@ public abstract class BaseMockSpringTest {
     protected EventProducer eventProducer;
     @MockitoBean
     protected PDFServiceClient pdfServiceClient;
-    @MockitoBean
-    protected TelemetryClient telemetry;
+    @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
+    protected Logger telemetry;
     @MockitoBean
     protected SendLetterApi sendLetterApi;
     @MockitoBean

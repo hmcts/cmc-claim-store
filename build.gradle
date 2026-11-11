@@ -86,12 +86,28 @@ allprojects {
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   }
 
+  configurations.configureEach {
+    exclude group: 'com.microsoft.azure', module: 'applicationinsights-core'
+    exclude group: 'com.microsoft.azure', module: 'applicationinsights-web'
+    exclude group: 'com.microsoft.azure', module: 'applicationinsights-logging-logback'
+    exclude group: 'com.microsoft.azure', module: 'applicationinsights-spring-boot-starter'
+    resolutionStrategy {
+      // CVE-2026-53914 is published against every jetbrains:kotlin CPE before 2.4.20.
+      force 'org.jetbrains.kotlin:kotlin-stdlib:2.4.21'
+      force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.4.21'
+      force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.4.21'
+      force 'org.jetbrains.kotlin:kotlin-stdlib-common:2.4.21'
+      // CVE-2025-48976 is fixed in 1.6.0.
+      force 'commons-fileupload:commons-fileupload:1.6.0'
+    }
+  }
+
   // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
   dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
     failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'false' ? 11 : 0
-    suppressionFile = 'config/owasp/suppressions.xml'
+    formats = ['HTML', 'JSON']
     analyzers {
       // Disable scanning of .NET related binaries
       assemblyEnabled = false
@@ -180,7 +196,17 @@ allprojects {
       dependency group: 'org.flywaydb', name: 'flyway-core', version: '9.22.3'
 
       dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
+      // DOMPurify 3.4.16 inside swagger-ui 5.34.0 matches CVE-2026-116802/116803/116804.
+      dependency group: 'org.webjars', name: 'swagger-ui', version: '5.34.1'
       dependency group: 'org.apache.commons', name: 'commons-io', version: '2.22.0'
+
+      // CVE-2026-53914 matches every jetbrains:kotlin artifact before 2.4.20.
+      dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.21') {
+        entry 'kotlin-stdlib'
+        entry 'kotlin-stdlib-jdk7'
+        entry 'kotlin-stdlib-jdk8'
+        entry 'kotlin-stdlib-common'
+      }
     }
   }
 
@@ -192,6 +218,13 @@ allprojects {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+
+    constraints {
+      implementation('org.jetbrains.kotlin:kotlin-stdlib:2.4.21') { version { strictly '2.4.21' } }
+      implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.4.21') { version { strictly '2.4.21' } }
+      implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.4.21') { version { strictly '2.4.21' } }
+      implementation('org.jetbrains.kotlin:kotlin-stdlib-common:2.4.21') { version { strictly '2.4.21' } }
+    }
   }
 }
 
@@ -253,9 +286,8 @@ dependencies {
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.2.1-RELEASE'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.9'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.10'
+  implementation group: 'io.opentelemetry', name: 'opentelemetry-api'
 
   implementation('com.github.hmcts:pdf-service-client:9.0.0') {
     exclude group: 'java-logging', module: 'java-logging'

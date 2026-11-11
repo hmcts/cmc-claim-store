@@ -1,6 +1,10 @@
 package uk.gov.hmcts.cmc.email;
 
-import com.microsoft.applicationinsights.TelemetryClient;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.logs.LogRecordBuilder;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.logs.Severity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,11 +15,11 @@ import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
 import java.io.IOException;
 
-import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.email.EmailService.EMAIL_SUBJECT;
 import static uk.gov.hmcts.cmc.email.EmailService.NOTIFICATION_FAILURE;
@@ -25,7 +29,10 @@ import static uk.gov.hmcts.cmc.email.EmailService.NOTIFICATION_FAILURE;
 public class EmailServiceTest {
 
     @Mock
-    private TelemetryClient telemetryClient;
+    private Logger telemetry;
+
+    @Mock
+    private LogRecordBuilder logRecord;
 
     @Mock
     private SendGridClient sendGrid;
@@ -34,7 +41,11 @@ public class EmailServiceTest {
 
     @BeforeEach
     public void beforeEachTest() {
-        emailService = new EmailService(telemetryClient, false, sendGrid);
+        lenient().when(telemetry.logRecordBuilder()).thenReturn(logRecord);
+        lenient().when(logRecord.setSeverity(any(Severity.class))).thenReturn(logRecord);
+        lenient().when(logRecord.setBody(anyString())).thenReturn(logRecord);
+        lenient().when(logRecord.setAllAttributes(any(Attributes.class))).thenReturn(logRecord);
+        emailService = new EmailService(telemetry, false, sendGrid);
     }
 
     @Test
@@ -48,7 +59,7 @@ public class EmailServiceTest {
     public void shouldLogAndRaiseAppInsightWithAsyncEnabled() {
         EmailData emailData = SampleEmailData.getDefault();
         try {
-            emailService = new EmailService(telemetryClient, true, sendGrid);
+            emailService = new EmailService(telemetry, true, sendGrid);
             assertThrows(EmailSendFailedException.class, () -> {
                 emailService.logSendMessageWithAttachmentFailure(
                     new EmailSendFailedException(new RuntimeException("Failed sending")),
@@ -57,10 +68,10 @@ public class EmailServiceTest {
                 );
             });
         } finally {
-            verify(telemetryClient).trackEvent(
-                NOTIFICATION_FAILURE,
-                singletonMap(EMAIL_SUBJECT, emailData.getSubject()),
-                null);
+            verify(logRecord).setBody(NOTIFICATION_FAILURE);
+            verify(logRecord).setAllAttributes(Attributes.of(
+                AttributeKey.stringKey(EMAIL_SUBJECT), emailData.getSubject()));
+            verify(logRecord).emit();
         }
     }
 
