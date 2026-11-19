@@ -440,12 +440,18 @@ tasks.register('apiTest', Test) {
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
+interface InjectedExecOps {
+  @javax.inject.Inject
+  ExecOperations getExecOps()
+}
+
 tasks.register('migrateClaims') {
   description 'Migrating claims from claim-store database to CCD'
 
+  def execOps = project.objects.newInstance(InjectedExecOps).execOps
   doLast {
-    javaexec {
-      main = "-jar"
+    execOps.javaexec {
+      mainClass = "-jar"
       args = [
         "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar"
       ]
