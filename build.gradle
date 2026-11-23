@@ -27,7 +27,7 @@ dependencyUpdates.resolutionStrategy = {
 
 // Keep in step with the org.springframework.boot plugin version above (Boot 4 no longer exposes it via implementationVersion)
 def springBootVersion = '4.1.2'
-def springCloudVersion = '2025.1.4'
+def springCloudVersion = '2026.0.0'
 
 def versions = [
   springBoot        : springBootVersion,
