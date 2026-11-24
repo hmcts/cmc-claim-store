@@ -3,9 +3,9 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.70'
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '4.1.2'
+  id 'org.springframework.boot' version '4.2.0'
   id 'org.owasp.dependencycheck' version '12.2.2'
-  id 'org.sonarqube' version '7.5.0.8588'
+  id 'org.sonarqube' version '7.6.0.18749'
   id 'com.github.ben-manes.versions' version '0.67.0'
   id 'jacoco'
   id 'idea'
@@ -26,8 +26,8 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 // Keep in step with the org.springframework.boot plugin version above (Boot 4 no longer exposes it via implementationVersion)
-def springBootVersion = '4.1.2'
-def springCloudVersion = '2025.1.4'
+def springBootVersion = '4.2.0'
+def springCloudVersion = '2025.1.5'
 
 def versions = [
   springBoot        : springBootVersion,
@@ -172,7 +172,7 @@ allprojects {
       // fun times...
       dependency group: 'com.google.guava', name: 'guava', version: '33.7.2-jre'
 
-      dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.86'
+      dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.87'
 
       dependencySet(
         group: 'org.yaml',
@@ -194,7 +194,7 @@ allprojects {
 
       dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
       // DOMPurify 3.4.16 inside swagger-ui 5.34.0 matches CVE-2026-116802/116803/116804.
-      dependency group: 'org.webjars', name: 'swagger-ui', version: '5.34.1'
+      dependency group: 'org.webjars', name: 'swagger-ui', version: '5.36.0'
       dependency group: 'org.apache.commons', name: 'commons-io', version: '2.22.0'
 
       // CVE-2026-53914 matches every jetbrains:kotlin artifact before 2.4.20.
@@ -276,9 +276,9 @@ dependencies {
 
   implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.2.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.2.1'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.14'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.15'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.2.1-RELEASE'
 
@@ -312,7 +312,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.10'
 
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.21.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.22.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.14.1'
 
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
@@ -321,8 +321,8 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.17'
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.17'
+  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.18'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.18'
 
 
 
