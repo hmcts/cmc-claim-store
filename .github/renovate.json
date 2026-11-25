@@ -93,6 +93,13 @@
       ],
       "groupName": "Jenkins library",
       "groupSlug": "jenkins-library"
+    },
+    {
+      "description": "Hold Spring Boot on 4.1.x: Spring Cloud 2025.1.x only supports Boot 4.0.x/4.1.x. Remove when moving to Spring Cloud 2026.0 (Boot 4.2)",
+      "matchPackageNames": [
+        "/^org\\.springframework\\.boot($|:)/"
+      ],
+      "allowedVersions": "<4.2.0"
     }
   ]
 }
