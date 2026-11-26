@@ -32,6 +32,17 @@
   ],
   "packageRules": [
     {
+      "description": "Catch-all group for minor and patch updates. Kept first: later rules win, so the named groups below take their own packages out of it",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "All non-major updates",
+      "groupSlug": "all-non-major",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
       "enabled": false,
       "matchPackageNames": [
         "/pact/"
@@ -61,16 +72,6 @@
       ],
       "groupName": "Terraform updates",
       "groupSlug": "terraform",
-      "automerge": true,
-      "automergeType": "pr"
-    },
-    {
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "groupName": "All non-major updates",
-      "groupSlug": "all-non-major",
       "automerge": true,
       "automergeType": "pr"
     },
