@@ -31,7 +31,7 @@ def springCloudVersion = '2025.1.5'
 
 def versions = [
   springBoot        : springBootVersion,
-  restAssuredVersion: '6.3.0',
+  restAssuredVersion: '7.0.0',
   pact_version    : '4.7.5',
   serviceAuthVersion : '6.1.2',
   idamJavaClient : '4.1.0-CCD-8220',
